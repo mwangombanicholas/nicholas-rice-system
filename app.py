@@ -40,20 +40,25 @@ order_processor = OrderProcessor(db)
 # ============================================
 # TEMPORARY - RESET ADMIN PASSWORD (REMOVE AFTER USE)
 # ============================================
+# ============================================
+# TEMPORARY - CREATE SIMPLE ADMIN (REMOVE AFTER USE)
+# ============================================
 try:
+    import hashlib
     conn = db.get_connection()
     c = conn.cursor()
     # Delete existing admin
     c.execute("DELETE FROM admins WHERE username='admin'")
-    # Create new admin with password Admin@123
-    hashed = hashlib.sha256("Admin@123".encode()).hexdigest()
+    # Create new admin with simple password
+    hashed = hashlib.sha256("admin123".encode()).hexdigest()
     c.execute("INSERT INTO admins (username, password, email, role) VALUES (?, ?, ?, ?)",
               ('admin', hashed, 'mwangombanicholas@gmail.com', 'superadmin'))
     conn.commit()
     conn.close()
-    print("✅ Admin reset: username='admin', password='Admin@123'")
+    print("✅ Admin reset: username='admin', password='admin123'")
 except Exception as e:
     print(f"⚠️ Admin reset error: {e}")
+# ============================================
 # ============================================
 
 if 'user' not in st.session_state:
