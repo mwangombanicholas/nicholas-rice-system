@@ -34,7 +34,7 @@ if 'user' not in st.session_state:
     st.session_state.is_admin = False
 
 # ============================================
-# IMPROVED CSS - ALL TEXT VISIBLE, BUTTONS FIXED
+# IMPROVED CSS - ALL TEXT VISIBLE
 # ============================================
 st.markdown("""
 <style>
@@ -75,7 +75,7 @@ st.markdown("""
         padding: 8px;
     }
     
-    /* FIX 1: ALL BUTTONS - Bright and visible */
+    /* ALL BUTTONS - Bright and visible */
     .stButton button {
         background-color: #2e7d32 !important;
         color: white !important;
@@ -94,7 +94,7 @@ st.markdown("""
         transform: scale(1.02);
     }
     
-    /* FIX 2: DROPDOWN SELECTION - Make options visible */
+    /* DROPDOWN SELECTION - Visible */
     .stSelectbox select {
         background-color: white !important;
         color: black !important;
@@ -103,20 +103,13 @@ st.markdown("""
         padding: 8px !important;
     }
     
-    /* Dropdown menu options */
     .stSelectbox option {
         background-color: white !important;
         color: black !important;
         padding: 10px !important;
     }
     
-    /* Selected option */
-    .stSelectbox select:focus {
-        border-color: #1b5e20 !important;
-        outline: none !important;
-    }
-    
-    /* FIX 3: TEXT INPUTS - Visible */
+    /* TEXT INPUTS - Visible */
     .stTextInput input {
         background-color: white !important;
         color: black !important;
@@ -129,23 +122,17 @@ st.markdown("""
         border-color: #2e7d32 !important;
     }
     
-    /* FIX 4: RADIO BUTTONS - Visible */
+    /* RADIO BUTTONS - Visible */
     .stRadio label {
         color: black !important;
     }
     
-    /* FIX 5: TEXT AREA - Visible */
+    /* TEXT AREA - Visible */
     .stTextArea textarea {
         background-color: white !important;
         color: black !important;
         border: 2px solid #ccc !important;
         border-radius: 5px !important;
-    }
-    
-    /* FIX 6: NUMBER INPUT - Visible */
-    .stNumberInput input {
-        background-color: white !important;
-        color: black !important;
     }
     
     /* Product cards */
@@ -200,28 +187,6 @@ st.markdown("""
         background-color: #d4edda !important;
         color: #155724 !important;
         border-radius: 5px;
-        border-left: 5px solid #28a745 !important;
-    }
-    
-    /* Error messages */
-    .stAlert[data-baseweb="alert"] {
-        background-color: #f8d7da !important;
-        color: #721c24 !important;
-        border-left: 5px solid #dc3545 !important;
-    }
-    
-    /* Table text */
-    table, th, td {
-        color: #000000 !important;
-    }
-    
-    /* Metric labels */
-    .stMetric label {
-        color: #000000 !important;
-    }
-    
-    .stMetric .metric-value {
-        color: #2e7d32 !important;
     }
     
     /* Tabs */
@@ -229,22 +194,12 @@ st.markdown("""
         color: black !important;
         background-color: white !important;
         border: 1px solid #ccc !important;
-        border-radius: 5px 5px 0 0 !important;
-        padding: 10px 20px !important;
     }
     
     .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] {
         color: #2e7d32 !important;
         font-weight: bold;
         border-bottom: 3px solid #2e7d32 !important;
-    }
-    
-    /* Expanders */
-    .streamlit-expanderHeader {
-        color: #2e7d32 !important;
-        background-color: #ffffff;
-        border: 1px solid #ddd;
-        border-radius: 5px;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -324,7 +279,7 @@ if menu == "🏠 Home":
                 st.rerun()
 
 # ============================================
-# ORDER PAGE
+# ORDER PAGE - FIXED WITH CORRECT MZUNI LOCATIONS
 # ============================================
 elif menu == "🛒 Order":
     st.title("Place Your Order")
@@ -356,13 +311,15 @@ elif menu == "🛒 Order":
             
             transport_cost = 0
             
-                       if delivery == "Mzuzu Direct":
+            # MZUZU DIRECT - Shows Mzuzu areas
+            if delivery == "Mzuzu Direct":
                 area = st.selectbox("Select Area", [""] + MZUZU_AREAS)
                 if area and area != "Other (specify in notes)":
                     transport_cost = get_transport_cost(area)
                     st.info(f"Transport cost: MWK {transport_cost:,}")
                 house = st.text_input("House Number *")
                 
+            # OTHER DISTRICT - Shows cities and courier options
             elif delivery == "Other District":
                 city = st.selectbox("Select City", [""] + list(CTS_BRANCHES.keys()))
                 courier = st.radio("Courier Service", ["CTS", "Speed"])
@@ -370,6 +327,7 @@ elif menu == "🛒 Order":
                     branch = st.selectbox("Select Branch", [""] + CTS_BRANCHES[city])
                 recipient = st.text_input("Recipient Name *")
                 
+            # MZUNI CAMPUS - Shows ONLY MZUNI hostels (FIXED)
             else:  # MZUNI Campus
                 location = st.selectbox("Select Location", [""] + CAMPUS_LOCATIONS)
                 if location == "Village":
@@ -390,8 +348,34 @@ elif menu == "🛒 Order":
             
             if st.form_submit_button("✅ Confirm Order", use_container_width=True):
                 if name and phone:
-                    st.success("Order placed successfully!")
-                    st.balloons()
+                    # Prepare order data
+                    order_data = {
+                        'user_id': st.session_state.user['id'] if st.session_state.user else None,
+                        'customer_name': name,
+                        'customer_phone': phone,
+                        'customer_email': None,
+                        'quantity': qty,
+                        'base_price': RICE_PRICES[qty],
+                        'transport_cost': transport_cost,
+                        'total_amount': total,
+                        'delivery_type': 'mzuzu_direct' if delivery == "Mzuzu Direct" else ('courier' if delivery == "Other District" else 'campus'),
+                        'delivery_location': location if delivery == "MZUNI Campus" else (area if delivery == "Mzuzu Direct" else city),
+                        'delivery_area': area if delivery == "Mzuzu Direct" else None,
+                        'house_number': house if 'house' in locals() else None,
+                        'courier_service': courier if delivery == "Other District" else None,
+                        'cts_branch': branch if 'branch' in locals() else None,
+                        'recipient_name': recipient if 'recipient' in locals() else None,
+                        'payment_method': payment,
+                        'notes': notes
+                    }
+                    
+                    # Process order
+                    result = order_processor.process_order(order_data)
+                    if result['success']:
+                        st.success(f"✅ Order placed! Order #: {result['order_number']}")
+                        st.balloons()
+                    else:
+                        st.error("Failed to place order")
                 else:
                     st.error("Please fill all required fields")
 
