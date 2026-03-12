@@ -356,7 +356,7 @@ elif menu == "🛒 Order":
             
             transport_cost = 0
             
-            if delivery == "Mzuzu Direct":
+                       if delivery == "Mzuzu Direct":
                 area = st.selectbox("Select Area", [""] + MZUZU_AREAS)
                 if area and area != "Other (specify in notes)":
                     transport_cost = get_transport_cost(area)
