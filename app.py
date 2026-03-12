@@ -23,6 +23,19 @@ from utils.helpers import *
 from utils.auth import Auth
 from utils.order_processor import OrderProcessor
 from config import *
+# TEMPORARY - RESET ADMIN PASSWORD (REMOVE AFTER USE)
+import hashlib
+conn = db.get_connection()
+c = conn.cursor()
+# Delete existing admin
+c.execute("DELETE FROM admins WHERE username='admin'")
+# Create new admin with password Admin@123
+hashed = hashlib.sha256("Admin@123".encode()).hexdigest()
+c.execute("INSERT INTO admins (username, password, email, role) VALUES (?, ?, ?, ?)",
+          ('admin', hashed, 'mwangombanicholas@gmail.com', 'superadmin'))
+conn.commit()
+conn.close()
+print("✅ Admin reset: username='admin', password='Admin@123'")
 
 st.set_page_config(
     page_title=APP_NAME,
