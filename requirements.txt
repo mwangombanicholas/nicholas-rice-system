@@ -1,5 +1,6 @@
-streamlit
-pandas
-plotly
-numpy
-python-dotenv
+streamlit==1.28.0
+pandas==2.0.3
+plotly==5.17.0
+numpy==1.24.3
+python-dotenv==1.0.0
+twilio==8.10.0
