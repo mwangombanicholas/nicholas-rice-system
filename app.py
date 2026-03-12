@@ -1,4 +1,3 @@
-
 """
 Main application for Nicholas Rice Ordering System
 Author: Nicholas Mwangomba
@@ -46,17 +45,61 @@ if 'user' not in st.session_state:
     st.session_state.page = 'home'
     st.session_state.notifications = {}
 
-# Custom CSS
+# Custom CSS - IMPROVED FOR BETTER VISIBILITY
 st.markdown("""
 <style>
-    .main-header {
-        background: linear-gradient(135deg, #1e3c32, #2e7d32);
-        padding: 2rem;
-        border-radius: 10px;
-        color: white;
-        text-align: center;
-        margin-bottom: 2rem;
+    /* Main text colors */
+    .stApp {
+        color: #333333;
     }
+    
+    /* Headers */
+    h1, h2, h3, h4 {
+        color: #2e7d32 !important;
+        font-weight: 600 !important;
+    }
+    
+    /* Paragraph text */
+    p, li, .stMarkdown {
+        color: #333333 !important;
+    }
+    
+    /* Sidebar text */
+    .css-1d391kg, .css-1lcbmhc, .stSidebar {
+        color: #333333 !important;
+    }
+    
+    /* Sidebar menu items */
+    .stRadio label {
+        color: #333333 !important;
+        font-weight: 500;
+    }
+    
+    /* Metric cards */
+    .css-1xarl3l, .stMetric {
+        color: #333333 !important;
+    }
+    
+    /* Info boxes */
+    .info-box {
+        background: #e8f5e9;
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid #2e7d32;
+        margin: 1rem 0;
+        color: #333333;
+    }
+    
+    .transport-box {
+        background: #fff3e0;
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid #ff9800;
+        margin: 1rem 0;
+        color: #333333;
+    }
+    
+    /* Product cards */
     .product-card {
         background: white;
         padding: 1.5rem;
@@ -65,20 +108,29 @@ st.markdown("""
         text-align: center;
         transition: transform 0.3s;
         margin-bottom: 1rem;
+        color: #333333;
     }
-    .product-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    
+    .product-card h3 {
+        color: #2e7d32 !important;
     }
+    
+    .product-card p {
+        color: #333333 !important;
+    }
+    
+    /* Price tag */
     .price-tag {
         font-size: 1.5rem;
         font-weight: bold;
-        color: #2e7d32;
+        color: #2e7d32 !important;
         margin: 0.5rem 0;
     }
+    
+    /* Quality badge */
     .quality-badge {
         background: #ffd700;
-        color: #333;
+        color: #333333 !important;
         padding: 0.25rem 0.75rem;
         border-radius: 20px;
         font-size: 0.875rem;
@@ -86,35 +138,94 @@ st.markdown("""
         display: inline-block;
         margin-bottom: 0.5rem;
     }
-    .info-box {
-        background: #e8f5e9;
-        padding: 1rem;
-        border-radius: 8px;
-        border-left: 4px solid #2e7d32;
-        margin: 1rem 0;
-    }
-    .transport-box {
-        background: #fff3e0;
-        padding: 1rem;
-        border-radius: 8px;
-        border-left: 4px solid #ff9800;
-        margin: 1rem 0;
-    }
+    
+    /* Supplier badge */
     .supplier-badge {
         background: #2196f3;
-        color: white;
+        color: white !important;
         padding: 0.5rem 1rem;
         border-radius: 30px;
         text-align: center;
         font-weight: bold;
         margin: 1rem 0;
     }
+    
+    /* Footer */
     .footer {
         text-align: center;
         padding: 2rem;
         margin-top: 3rem;
         background: #f8f9fa;
         border-radius: 10px;
+        color: #333333;
+    }
+    
+    /* Main header */
+    .main-header {
+        background: linear-gradient(135deg, #1e3c32, #2e7d32);
+        padding: 2rem;
+        border-radius: 10px;
+        color: white !important;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .main-header h1, .main-header p {
+        color: white !important;
+    }
+    
+    /* Buttons */
+    .stButton button {
+        background-color: #2e7d32;
+        color: white !important;
+        font-weight: 600;
+        border: none;
+        border-radius: 5px;
+        padding: 0.5rem 1rem;
+        width: 100%;
+    }
+    
+    .stButton button:hover {
+        background-color: #1b5e20;
+        color: white !important;
+    }
+    
+    /* Form inputs */
+    .stTextInput input, .stSelectbox select, .stTextArea textarea {
+        color: #333333 !important;
+        background-color: white;
+        border: 1px solid #ddd;
+    }
+    
+    /* Success messages */
+    .stAlert {
+        color: #333333 !important;
+    }
+    
+    /* Metrics */
+    .stMetric label, .stMetric .metric-value {
+        color: #333333 !important;
+    }
+    
+    /* Expanders */
+    .streamlit-expanderHeader {
+        color: #2e7d32 !important;
+        font-weight: 600;
+    }
+    
+    /* Dataframes */
+    .dataframe {
+        color: #333333 !important;
+    }
+    
+    /* Tabs */
+    .stTabs [data-baseweb="tab-list"] button {
+        color: #333333 !important;
+    }
+    
+    .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] {
+        color: #2e7d32 !important;
+        font-weight: 600;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -370,28 +481,74 @@ elif menu == "📋 My Orders":
         orders = c.fetchall()
         conn.close()
         
-        for order in orders:
-            with st.expander(f"Order #{order['order_number']}"):
-                st.write(f"Quantity: {order['quantity']}kg")
-                st.write(f"Total: {format_currency(order['total_amount'])}")
-                st.write(f"Status: {order['order_status']}")
+        if orders:
+            for order in orders:
+                with st.expander(f"Order #{order['order_number']} - {order['created_at'][:10]}"):
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.write(f"**Quantity:** {order['quantity']}kg")
+                        st.write(f"**Total:** {format_currency(order['total_amount'])}")
+                        st.write(f"**Payment:** {order['payment_method']}")
+                    with col2:
+                        status_color = get_order_status_color(order['order_status'])
+                        st.markdown(f"**Status:** <span style='color: {status_color};'>{order['order_status']}</span>", unsafe_allow_html=True)
+                        st.write(f"**Tracking:** {order['tracking_number']}")
+        else:
+            st.info("No orders yet")
 
 # ============================================
 # TRACK ORDER PAGE
 # ============================================
 elif menu == "🔍 Track Order":
     st.title("🔍 Track Order")
-    tracking = st.text_input("Enter Order Number")
+    tracking = st.text_input("Enter Order Number or Tracking Number")
     if tracking:
         conn = db.get_connection()
         c = conn.cursor()
-        c.execute("SELECT * FROM orders WHERE order_number=?", (tracking,))
+        c.execute("SELECT * FROM orders WHERE order_number=? OR tracking_number=?", (tracking, tracking))
         order = c.fetchone()
         conn.close()
         if order:
-            st.success(f"Order #{order['order_number']} - {order['order_status']}")
+            st.success(f"Order #{order['order_number']} found!")
+            col1, col2 = st.columns(2)
+            with col1:
+                st.metric("Quantity", f"{order['quantity']}kg")
+                st.metric("Total", format_currency(order['total_amount']))
+            with col2:
+                st.metric("Status", order['order_status'])
+                st.metric("Date", order['created_at'][:10])
         else:
             st.error("Order not found")
+
+# ============================================
+# REFER & EARN PAGE
+# ============================================
+elif menu == "🎁 Refer & Earn":
+    st.title("🎁 Refer & Earn")
+    if not st.session_state.user:
+        st.warning("Please login first")
+    else:
+        st.info("Share your referral link with friends. When they order, you get 100 points!")
+        referral_code = st.session_state.user.get('referral_code', 'NK123456')
+        st.code(f"https://nicholas-rice-system.streamlit.app/?ref={referral_code}")
+
+# ============================================
+# PROFILE PAGE
+# ============================================
+elif menu == "👤 Profile":
+    st.title("👤 Profile")
+    if not st.session_state.user:
+        st.warning("Please login first")
+    else:
+        user = st.session_state.user
+        col1, col2 = st.columns(2)
+        with col1:
+            st.write(f"**Username:** {user['username']}")
+            st.write(f"**Phone:** {user['phone']}")
+            st.write(f"**Email:** {user.get('email', 'Not set')}")
+        with col2:
+            st.write(f"**Points:** {user['points']} 🌟")
+            st.write(f"**Member since:** {user['created_at'][:10]}")
 
 # ============================================
 # LOGIN PAGE
@@ -402,12 +559,13 @@ elif menu == "🔐 Login":
     
     with tab1:
         with st.form("login"):
-            user = st.text_input("Username")
-            pwd = st.text_input("Password", type="password")
-            if st.form_submit_button("Login"):
-                result = auth.login_user(user, pwd)
+            username = st.text_input("Username or Email")
+            password = st.text_input("Password", type="password")
+            if st.form_submit_button("Login", use_container_width=True):
+                result = auth.login_user(username, password)
                 if result['success']:
                     st.session_state.user = result['user']
+                    st.success("Login successful!")
                     st.rerun()
                 else:
                     st.error("Invalid credentials")
@@ -417,16 +575,18 @@ elif menu == "🔐 Login":
             new_user = st.text_input("Username *")
             new_pwd = st.text_input("Password *", type="password")
             confirm = st.text_input("Confirm Password *", type="password")
-            new_phone = st.text_input("Phone *")
-            new_email = st.text_input("Email")
+            new_phone = st.text_input("Phone Number *")
+            new_email = st.text_input("Email (optional)")
             
-            if st.form_submit_button("Register"):
+            if st.form_submit_button("Register", use_container_width=True):
                 if new_pwd != confirm:
                     st.error("Passwords don't match")
+                elif len(new_pwd) < 6:
+                    st.error("Password must be at least 6 characters")
                 else:
                     result = auth.register_user(new_user, new_pwd, new_phone, new_email)
                     if result['success']:
-                        st.success("Registered! Please login.")
+                        st.success("Registration successful! Please login.")
                     else:
                         st.error(result['message'])
 
@@ -435,22 +595,23 @@ elif menu == "🔐 Login":
 # ============================================
 elif menu == "ℹ️ About":
     st.title("ℹ️ About Us")
-    st.markdown("""
-    ### Our Story
-    We are a rice delivery business based in **Mzuzu**, sourcing premium quality rice directly from **Karonga**.
-    
-    ### Contact
-    * Phone: 0886 867 758
-    * Email: mwangombanicholas@gmail.com
-    """)
-
-# ============================================
-# LOGOUT
-# ============================================
-elif menu == "🚪 Logout":
-    st.session_state.user = None
-    st.session_state.is_admin = False
-    st.rerun()
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("""
+        ### Our Story
+        We are a rice delivery business based in **Mzuzu**, sourcing premium quality rice directly from **Karonga**.
+        
+        ### Contact
+        * **Phone:** 0886 867 758
+        * **Email:** mwangombanicholas@gmail.com
+        """)
+    with col2:
+        st.markdown("""
+        ### Delivery Options
+        * **📍 Mzuzu Direct** - Doorstep delivery (transport cost added)
+        * **📦 Other Districts** - CTS/Speed couriers (pay at branch)
+        * **🏫 MZUNI Campus** - Free delivery to all locations
+        """)
 
 # ============================================
 # ADMIN DASHBOARD
@@ -459,10 +620,132 @@ elif menu == "📊 Dashboard" and st.session_state.is_admin:
     st.title("📊 Admin Dashboard")
     stats = db.get_dashboard_stats()
     
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
     col1.metric("Total Orders", stats['total_orders'])
-    col2.metric("Revenue", format_currency(stats['total_revenue']))
+    col2.metric("Total Revenue", format_currency(stats['total_revenue']))
     col3.metric("Rice Sold", f"{stats['total_rice']}kg")
+    col4.metric("Today's Orders", stats['today_orders'])
+    
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Pending Orders", stats['pending_orders'])
+    col2.metric("Mzuzu Deliveries", stats['mzuzu_pending'])
+    col3.metric("Courier Deliveries", stats['courier_pending'])
+    
+    st.divider()
+    st.subheader("Recent Orders")
+    
+    conn = db.get_connection()
+    c = conn.cursor()
+    c.execute("SELECT * FROM orders ORDER BY id DESC LIMIT 20")
+    orders = c.fetchall()
+    conn.close()
+    
+    if orders:
+        orders_list = []
+        for o in orders:
+            orders_list.append({
+                'Order #': o['order_number'],
+                'Customer': o['customer_name'],
+                'Phone': o['customer_phone'],
+                'Qty': f"{o['quantity']}kg",
+                'Total': format_currency(o['total_amount']),
+                'Status': o['order_status'],
+                'Date': o['created_at'][:16]
+            })
+        df = pd.DataFrame(orders_list)
+        st.dataframe(df, use_container_width=True)
+    else:
+        st.info("No orders yet")
+
+# ============================================
+# ADMIN ORDERS PAGE
+# ============================================
+elif menu == "📦 Orders" and st.session_state.is_admin:
+    st.title("📦 All Orders")
+    conn = db.get_connection()
+    c = conn.cursor()
+    c.execute("SELECT * FROM orders ORDER BY id DESC")
+    orders = c.fetchall()
+    conn.close()
+    
+    if orders:
+        orders_list = []
+        for o in orders:
+            orders_list.append({
+                'Order #': o['order_number'],
+                'Customer': o['customer_name'],
+                'Phone': o['customer_phone'],
+                'Qty': f"{o['quantity']}kg",
+                'Total': format_currency(o['total_amount']),
+                'Delivery': o['delivery_type'],
+                'Status': o['order_status'],
+                'Date': o['created_at'][:16]
+            })
+        df = pd.DataFrame(orders_list)
+        st.dataframe(df, use_container_width=True)
+    else:
+        st.info("No orders yet")
+
+# ============================================
+# ADMIN USERS PAGE
+# ============================================
+elif menu == "👥 Users" and st.session_state.is_admin:
+    st.title("👥 Users")
+    conn = db.get_connection()
+    c = conn.cursor()
+    c.execute("SELECT id, username, email, phone, points, created_at FROM users ORDER BY id DESC")
+    users = c.fetchall()
+    conn.close()
+    
+    if users:
+        users_list = []
+        for u in users:
+            users_list.append({
+                'ID': u[0],
+                'Username': u[1],
+                'Email': u[2] or 'N/A',
+                'Phone': u[3],
+                'Points': u[4],
+                'Joined': u[5][:10]
+            })
+        df = pd.DataFrame(users_list)
+        st.dataframe(df, use_container_width=True)
+    else:
+        st.info("No users yet")
+
+# ============================================
+# ADMIN ANALYTICS PAGE
+# ============================================
+elif menu == "📈 Analytics" and st.session_state.is_admin:
+    st.title("📈 Analytics")
+    conn = db.get_connection()
+    c = conn.cursor()
+    c.execute("SELECT DATE(created_at) as date, COUNT(*) as orders, SUM(total_amount) as revenue FROM orders GROUP BY DATE(created_at) ORDER BY date DESC LIMIT 30")
+    data = c.fetchall()
+    conn.close()
+    
+    if data:
+        df = pd.DataFrame(data, columns=['Date', 'Orders', 'Revenue'])
+        fig = px.line(df, x='Date', y=['Orders', 'Revenue'], title='Daily Sales Trend')
+        st.plotly_chart(fig, use_container_width=True)
+    else:
+        st.info("No data yet")
+
+# ============================================
+# ADMIN SETTINGS PAGE
+# ============================================
+elif menu == "⚙️ Settings" and st.session_state.is_admin:
+    st.title("⚙️ Settings")
+    st.info("Settings page coming soon!")
+
+# ============================================
+# LOGOUT
+# ============================================
+elif menu == "🚪 Logout":
+    st.session_state.user = None
+    st.session_state.is_admin = False
+    st.success("Logged out successfully!")
+    st.rerun()
 
 # Footer
 st.markdown("""
