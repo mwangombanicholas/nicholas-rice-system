@@ -33,17 +33,52 @@ if 'user' not in st.session_state:
     st.session_state.user = None
     st.session_state.is_admin = False
 
-# Simple, clean CSS
+# ============================================
+# IMPROVED CSS - ALL TEXT VISIBLE
+# ============================================
 st.markdown("""
 <style>
-    /* Main text - all dark for visibility */
-    .stApp, p, h1, h2, h3, h4, h5, h6, label, span, div {
+    /* Main app background - light */
+    .stApp {
+        background-color: #f8f9fa;
+    }
+    
+    /* ALL headers - GREEN and visible */
+    h1, h2, h3, h4, h5, h6 {
+        color: #2e7d32 !important;
+        font-weight: bold !important;
+    }
+    
+    /* Main title specifically */
+    h1 {
+        color: #2e7d32 !important;
+        font-size: 2.2rem !important;
+        border-bottom: 2px solid #2e7d32;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+    
+    /* Subheaders */
+    h2 {
+        color: #2e7d32 !important;
+        font-size: 1.8rem !important;
+        margin-top: 20px;
+    }
+    
+    h3 {
+        color: #2e7d32 !important;
+        font-size: 1.4rem !important;
+    }
+    
+    /* Regular text - black */
+    p, li, span, div, .stMarkdown, .stText {
         color: #000000 !important;
     }
     
     /* Sidebar - white background */
     .css-1d391kg, .stSidebar {
         background-color: #ffffff !important;
+        border-right: 1px solid #e0e0e0;
     }
     
     /* Sidebar text - black */
@@ -53,10 +88,9 @@ st.markdown("""
         padding: 8px;
     }
     
-    /* Headers - green */
-    h1 {
+    /* Sidebar headers - green */
+    .stSidebar h1, .stSidebar h2, .stSidebar h3 {
         color: #2e7d32 !important;
-        font-size: 2rem !important;
     }
     
     /* Product cards */
@@ -67,6 +101,12 @@ st.markdown("""
         border: 1px solid #ddd;
         text-align: center;
         margin: 10px 0;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .product-card b {
+        color: #2e7d32 !important;
+        font-size: 1.2rem;
     }
     
     .price-tag {
@@ -83,22 +123,37 @@ st.markdown("""
         padding: 10px 20px;
         border-radius: 5px;
         font-weight: bold;
+        width: 100%;
+    }
+    
+    .stButton button:hover {
+        background-color: #1b5e20;
     }
     
     /* Input fields */
-    .stTextInput input, .stSelectbox select {
+    .stTextInput input, .stSelectbox select, .stTextArea textarea {
         background-color: #ffffff;
         border: 1px solid #ccc;
         color: #000000 !important;
+        border-radius: 5px;
     }
     
     /* Info boxes */
     .info-box {
-        background-color: #f5f5f5;
+        background-color: #ffffff;
         padding: 15px;
         border-radius: 10px;
         border-left: 5px solid #2e7d32;
         margin: 10px 0;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .info-box b {
+        color: #2e7d32 !important;
+        font-size: 1.1rem;
+    }
+    
+    .info-box p, .info-box div {
         color: #000000 !important;
     }
     
@@ -106,9 +161,10 @@ st.markdown("""
     .footer {
         text-align: center;
         padding: 20px;
-        background-color: #f5f5f5;
+        background-color: #ffffff;
         border-radius: 10px;
         margin-top: 30px;
+        border: 1px solid #ddd;
         color: #000000 !important;
     }
     
@@ -116,6 +172,7 @@ st.markdown("""
     .stAlert {
         background-color: #d4edda !important;
         color: #155724 !important;
+        border-radius: 5px;
     }
     
     /* Error messages */
@@ -123,10 +180,44 @@ st.markdown("""
         background-color: #f8d7da !important;
         color: #721c24 !important;
     }
+    
+    /* Table text */
+    table, th, td {
+        color: #000000 !important;
+    }
+    
+    /* Metric labels */
+    .stMetric label {
+        color: #000000 !important;
+    }
+    
+    .stMetric .metric-value {
+        color: #2e7d32 !important;
+    }
+    
+    /* Tabs */
+    .stTabs [data-baseweb="tab-list"] button {
+        color: #000000 !important;
+    }
+    
+    .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] {
+        color: #2e7d32 !important;
+        font-weight: bold;
+    }
+    
+    /* Expanders */
+    .streamlit-expanderHeader {
+        color: #2e7d32 !important;
+        background-color: #ffffff;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
 </style>
 """, unsafe_allow_html=True)
 
-# Sidebar
+# ============================================
+# SIDEBAR
+# ============================================
 with st.sidebar:
     st.markdown("## 🌾 Nicholas Rice")
     st.markdown("Quality from Karonga")
@@ -139,7 +230,9 @@ with st.sidebar:
     else:
         menu = st.radio("Menu", ["🏠 Home", "🛒 Order", "🔍 Track", "🔐 Login", "ℹ️ About"])
 
-# Home Page
+# ============================================
+# HOME PAGE
+# ============================================
 if menu == "🏠 Home":
     st.title("🌾 Nicholas Rice Seller")
     st.markdown("**Quality rice from Karonga - Fresh, aromatic, and premium grade**")
@@ -196,7 +289,9 @@ if menu == "🏠 Home":
                 st.session_state['order_qty'] = p['size']
                 st.rerun()
 
-# Order Page
+# ============================================
+# ORDER PAGE
+# ============================================
 elif menu == "🛒 Order":
     st.title("Place Your Order")
     
@@ -204,8 +299,13 @@ elif menu == "🛒 Order":
     col1, col2 = st.columns(2)
     
     with col1:
-        st.markdown(f"**{qty}kg Rice**")
-        st.markdown(f"**Price:** MWK {RICE_PRICES[qty]:,}")
+        st.markdown(f"""
+        <div class="product-card">
+            <b>{qty}kg Rice</b><br>
+            <span class="price-tag">MWK {RICE_PRICES[qty]:,}</span>
+        </div>
+        """, unsafe_allow_html=True)
+        
         new_qty = st.selectbox("Change Quantity", [1,5,10,20], index=[1,5,10,20].index(qty))
         if new_qty != qty:
             st.session_state['order_qty'] = new_qty
@@ -213,92 +313,165 @@ elif menu == "🛒 Order":
     
     with col2:
         with st.form("order_form"):
-            st.text_input("Full Name")
-            st.text_input("Phone Number")
+            st.subheader("Your Details")
+            name = st.text_input("Full Name *")
+            phone = st.text_input("Phone Number *")
             
+            st.subheader("Delivery")
             delivery = st.selectbox("Delivery Type", ["Mzuzu Direct", "Other District", "MZUNI Campus"])
             
+            transport_cost = 0
+            
             if delivery == "Mzuzu Direct":
-                st.selectbox("Area", MZUZU_AREAS)
-                st.text_input("House Number")
+                area = st.selectbox("Select Area", [""] + MZUZU_AREAS)
+                if area and area != "Other (specify in notes)":
+                    transport_cost = get_transport_cost(area)
+                    st.info(f"Transport cost: MWK {transport_cost:,}")
+                house = st.text_input("House Number *")
+                
             elif delivery == "Other District":
-                st.selectbox("City", list(CTS_BRANCHES.keys()))
-                st.radio("Courier", ["CTS", "Speed"])
-            else:
-                st.selectbox("Location", CAMPUS_LOCATIONS)
-                st.text_input("Room/House")
+                city = st.selectbox("Select City", [""] + list(CTS_BRANCHES.keys()))
+                courier = st.radio("Courier Service", ["CTS", "Speed"])
+                if courier == "CTS" and city:
+                    branch = st.selectbox("Select Branch", [""] + CTS_BRANCHES[city])
+                recipient = st.text_input("Recipient Name *")
+                
+            else:  # MZUNI Campus
+                location = st.selectbox("Select Location", [""] + CAMPUS_LOCATIONS)
+                if location == "Village":
+                    house = st.text_input("House Number *")
+                else:
+                    room = st.text_input("Room/Block Number *")
             
-            st.selectbox("Payment", ["Pay on Delivery", "Mobile Money", "Bank Transfer"])
+            st.subheader("Payment")
+            payment = st.selectbox("Payment Method", ["Pay on Delivery", "Mobile Money", "Bank Transfer"])
+            notes = st.text_area("Special Instructions (Optional)")
             
-            if st.form_submit_button("Confirm Order"):
-                st.success("Order placed successfully!")
-                st.balloons()
+            total = RICE_PRICES[qty] + transport_cost
+            st.markdown(f"""
+            <div style="background: #f0f0f0; padding: 15px; border-radius: 5px; margin: 10px 0;">
+                <b>Total: MWK {total:,}</b>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            if st.form_submit_button("✅ Confirm Order", use_container_width=True):
+                if name and phone:
+                    st.success("Order placed successfully!")
+                    st.balloons()
+                else:
+                    st.error("Please fill all required fields")
 
-# Track Order
+# ============================================
+# TRACK ORDER PAGE
+# ============================================
 elif menu == "🔍 Track":
     st.title("Track Order")
-    tracking = st.text_input("Enter Order Number")
+    tracking = st.text_input("Enter Order Number or Tracking Number")
     if tracking:
         st.info("Order status will appear here")
 
-# Login Page
+# ============================================
+# LOGIN PAGE
+# ============================================
 elif menu == "🔐 Login":
     st.title("Login")
     tab1, tab2 = st.tabs(["Login", "Register"])
     
     with tab1:
-        with st.form("login"):
-            username = st.text_input("Username")
+        with st.form("login_form"):
+            username = st.text_input("Username or Email")
             password = st.text_input("Password", type="password")
-            if st.form_submit_button("Login"):
-                st.session_state.user = {"username": username, "points": 0}
-                st.rerun()
+            if st.form_submit_button("Login", use_container_width=True):
+                result = auth.login_user(username, password)
+                if result['success']:
+                    st.session_state.user = result['user']
+                    st.success("Login successful!")
+                    st.rerun()
+                else:
+                    st.error("Invalid credentials")
     
     with tab2:
-        with st.form("register"):
-            st.text_input("Username")
-            st.text_input("Password", type="password")
-            st.text_input("Confirm Password", type="password")
-            st.text_input("Phone")
-            if st.form_submit_button("Register"):
-                st.success("Registered successfully! Please login.")
+        with st.form("register_form"):
+            new_user = st.text_input("Username *")
+            new_pwd = st.text_input("Password *", type="password")
+            confirm = st.text_input("Confirm Password *", type="password")
+            new_phone = st.text_input("Phone Number *")
+            new_email = st.text_input("Email (optional)")
+            
+            if st.form_submit_button("Register", use_container_width=True):
+                if new_pwd != confirm:
+                    st.error("Passwords do not match")
+                elif len(new_pwd) < 6:
+                    st.error("Password must be at least 6 characters")
+                else:
+                    result = auth.register_user(new_user, new_pwd, new_phone, new_email)
+                    if result['success']:
+                        st.success("Registration successful! Please login.")
+                    else:
+                        st.error(result['message'])
 
-# My Orders
+# ============================================
+# MY ORDERS PAGE
+# ============================================
 elif menu == "📋 My Orders":
     st.title("My Orders")
-    st.info("No orders yet")
+    if not st.session_state.user:
+        st.warning("Please login first")
+    else:
+        st.info("No orders yet")
 
-# Profile
+# ============================================
+# PROFILE PAGE
+# ============================================
 elif menu == "👤 Profile":
     st.title("Profile")
-    if st.session_state.user:
-        st.write(f"**Username:** {st.session_state.user['username']}")
-        st.write(f"**Points:** {st.session_state.user['points']} ⭐")
-    else:
+    if not st.session_state.user:
         st.warning("Please login first")
+    else:
+        user = st.session_state.user
+        col1, col2 = st.columns(2)
+        with col1:
+            st.write(f"**Username:** {user['username']}")
+            st.write(f"**Phone:** {user['phone']}")
+            st.write(f"**Email:** {user.get('email', 'Not set')}")
+        with col2:
+            st.write(f"**Points:** {user['points']} ⭐")
+            st.write(f"**Member since:** {user.get('created_at', 'N/A')[:10]}")
 
-# About
+# ============================================
+# ABOUT PAGE
+# ============================================
 elif menu == "ℹ️ About":
     st.title("About")
-    st.markdown("""
-    ### Nicholas Rice Seller
-    - **Location:** Mzuzu, Malawi
-    - **Supplier:** Karonga (Quality Rice)
-    - **Contact:** 0886 867 758
-    - **Email:** mwangombanicholas@gmail.com
+    col1, col2 = st.columns(2)
     
-    ### Delivery Options
-    - **Mzuzu Direct:** Doorstep delivery (transport cost added)
-    - **Other Districts:** CTS/Speed couriers (pay at branch)
-    - **MZUNI Campus:** Free delivery to all locations
-    """)
+    with col1:
+        st.markdown("""
+        ### Nicholas Rice Seller
+        - **Location:** Mzuzu, Malawi
+        - **Supplier:** Karonga (Quality Rice)
+        - **Contact:** 0886 867 758
+        - **Email:** mwangombanicholas@gmail.com
+        """)
+    
+    with col2:
+        st.markdown("""
+        ### Delivery Options
+        - **📍 Mzuzu Direct:** Doorstep delivery (transport cost added)
+        - **📦 Other Districts:** CTS/Speed couriers (pay at branch)
+        - **🏫 MZUNI Campus:** Free delivery to all locations
+        """)
 
-# Logout
+# ============================================
+# LOGOUT
+# ============================================
 elif menu == "🚪 Logout":
     st.session_state.user = None
     st.rerun()
 
-# Footer
+# ============================================
+# FOOTER
+# ============================================
 st.markdown("""
 <div class="footer">
     🌾 Nicholas Rice | Quality from Karonga | 📞 0886 867 758
