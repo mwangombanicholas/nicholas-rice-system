@@ -32,6 +32,8 @@ order_processor = OrderProcessor(db)
 if 'user' not in st.session_state:
     st.session_state.user = None
     st.session_state.is_admin = False
+    st.session_state.order_qty = 1
+    st.session_state.page = "home"
 
 # ============================================
 # IMPROVED CSS - ALL TEXT VISIBLE
@@ -94,45 +96,33 @@ st.markdown("""
         transform: scale(1.02);
     }
     
-    /* DROPDOWN SELECTION - Visible */
-    .stSelectbox select {
-        background-color: white !important;
-        color: black !important;
-        border: 2px solid #2e7d32 !important;
-        border-radius: 5px !important;
-        padding: 8px !important;
+    /* Clickable delivery boxes */
+    .clickable-box {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 10px;
+        border: 2px solid #e0e0e0;
+        text-align: center;
+        margin: 10px 0;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        cursor: pointer;
+        transition: all 0.3s;
     }
     
-    .stSelectbox option {
-        background-color: white !important;
-        color: black !important;
-        padding: 10px !important;
+    .clickable-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(46,125,50,0.2);
+        border-color: #2e7d32;
     }
     
-    /* TEXT INPUTS - Visible */
-    .stTextInput input {
-        background-color: white !important;
-        color: black !important;
-        border: 2px solid #ccc !important;
-        border-radius: 5px !important;
-        padding: 8px !important;
+    .clickable-box h4 {
+        color: #2e7d32 !important;
+        margin: 0;
     }
     
-    .stTextInput input:focus {
-        border-color: #2e7d32 !important;
-    }
-    
-    /* RADIO BUTTONS - Visible */
-    .stRadio label {
-        color: black !important;
-    }
-    
-    /* TEXT AREA - Visible */
-    .stTextArea textarea {
-        background-color: white !important;
-        color: black !important;
-        border: 2px solid #ccc !important;
-        border-radius: 5px !important;
+    .clickable-box p {
+        color: #000000 !important;
+        margin: 5px 0 0 0;
     }
     
     /* Product cards */
@@ -182,11 +172,33 @@ st.markdown("""
         color: #000000 !important;
     }
     
-    /* Success messages */
-    .stAlert {
-        background-color: #d4edda !important;
-        color: #155724 !important;
-        border-radius: 5px;
+    /* DROPDOWN SELECTION - Visible */
+    .stSelectbox select {
+        background-color: white !important;
+        color: black !important;
+        border: 2px solid #2e7d32 !important;
+        border-radius: 5px !important;
+        padding: 8px !important;
+    }
+    
+    .stSelectbox option {
+        background-color: white !important;
+        color: black !important;
+        padding: 10px !important;
+    }
+    
+    /* TEXT INPUTS - Visible */
+    .stTextInput input {
+        background-color: white !important;
+        color: black !important;
+        border: 2px solid #ccc !important;
+        border-radius: 5px !important;
+        padding: 8px !important;
+    }
+    
+    /* RADIO BUTTONS - Visible */
+    .stRadio label {
+        color: black !important;
     }
     
     /* Tabs */
@@ -199,7 +211,6 @@ st.markdown("""
     .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] {
         color: #2e7d32 !important;
         font-weight: bold;
-        border-bottom: 3px solid #2e7d32 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -212,86 +223,136 @@ with st.sidebar:
     st.markdown("Quality from Karonga")
     st.divider()
     
+    # Menu selection
     if st.session_state.user:
-        menu = st.radio("Menu", ["🏠 Home", "🛒 Order", "📋 My Orders", "🔍 Track", "👤 Profile", "🚪 Logout"])
+        options = ["🏠 Home", "🛒 Order", "📋 My Orders", "🔍 Track", "👤 Profile", "🚪 Logout"]
+    else:
+        options = ["🏠 Home", "🛒 Order", "🔍 Track", "🔐 Login", "ℹ️ About"]
+    
+    selected = st.radio("Menu", options, key="nav")
+    st.session_state.page = selected
+    
+    if st.session_state.user:
+        st.divider()
         st.markdown(f"**Welcome, {st.session_state.user['username']}!**")
         st.markdown(f"**Points:** {st.session_state.user['points']} ⭐")
-    else:
-        menu = st.radio("Menu", ["🏠 Home", "🛒 Order", "🔍 Track", "🔐 Login", "ℹ️ About"])
 
 # ============================================
-# HOME PAGE
+# HOME PAGE - WITH CLICKABLE DELIVERY BOXES
 # ============================================
-if menu == "🏠 Home":
+if st.session_state.page == "🏠 Home":
     st.title("🌾 Nicholas Rice Seller")
     st.markdown("**Quality rice from Karonga - Fresh, aromatic, and premium grade**")
     
+    # Clickable delivery boxes row
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        st.markdown("""
-        <div class="info-box">
-            <b>📍 Mzuzu Direct</b><br>
-            Doorstep delivery<br>
-            Transport cost added
-        </div>
-        """, unsafe_allow_html=True)
+        box_clicked = st.button(
+            "📍 Mzuzu Direct\n\nDoorstep delivery\nTransport cost added",
+            key="box_mzuzu",
+            use_container_width=True
+        )
+        if box_clicked:
+            st.session_state['order_qty'] = 1
+            st.session_state['preset_delivery'] = "Mzuzu Direct Delivery"
+            st.session_state.page = "🛒 Order"
+            st.rerun()
     
     with col2:
-        st.markdown("""
-        <div class="info-box">
-            <b>📦 Other Districts</b><br>
-            CTS/Speed Couriers<br>
-            Pay at branch
-        </div>
-        """, unsafe_allow_html=True)
+        box_clicked = st.button(
+            "📦 Other Districts\n\nCTS/Speed Couriers\nPay at branch",
+            key="box_other",
+            use_container_width=True
+        )
+        if box_clicked:
+            st.session_state['order_qty'] = 1
+            st.session_state['preset_delivery'] = "Other District (Courier)"
+            st.session_state.page = "🛒 Order"
+            st.rerun()
     
     with col3:
-        st.markdown("""
-        <div class="info-box">
-            <b>🏫 MZUNI Campus</b><br>
-            Free delivery<br>
-            All hostels & villages
-        </div>
-        """, unsafe_allow_html=True)
+        box_clicked = st.button(
+            "🏫 MZUNI Campus\n\nFree delivery\nAll hostels & villages",
+            key="box_campus",
+            use_container_width=True
+        )
+        if box_clicked:
+            st.session_state['order_qty'] = 1
+            st.session_state['preset_delivery'] = "MZUNI Campus"
+            st.session_state.page = "🛒 Order"
+            st.rerun()
     
     st.divider()
     st.subheader("Our Products")
     
-    cols = st.columns(4)
-    products = [
-        {"size": 1, "price": 4000},
-        {"size": 5, "price": 20000},
-        {"size": 10, "price": 40000},
-        {"size": 20, "price": 80000}
-    ]
+    # Products in 4 columns with clickable buttons
+    col1, col2, col3, col4 = st.columns(4)
     
-    for idx, p in enumerate(products):
-        with cols[idx]:
-            st.markdown(f"""
-            <div class="product-card">
-                <b>{p['size']}kg Rice</b><br>
-                <span class="price-tag">MWK {p['price']:,}</span>
-            </div>
-            """, unsafe_allow_html=True)
-            if st.button(f"Order {p['size']}kg", key=f"home_{p['size']}"):
-                st.session_state['order_qty'] = p['size']
-                st.rerun()
+    with col1:
+        st.markdown("""
+        <div style="background: white; padding: 20px; border-radius: 10px; border: 1px solid #ddd; text-align: center; margin-bottom: 10px;">
+            <b style="color: #2e7d32; font-size: 1.2rem;">1kg Rice</b><br>
+            <span style="color: #2e7d32; font-size: 24px; font-weight: bold;">MWK 4,000</span>
+        </div>
+        """, unsafe_allow_html=True)
+        if st.button("Order 1kg", key="home_1kg", use_container_width=True):
+            st.session_state['order_qty'] = 1
+            st.session_state.page = "🛒 Order"
+            st.rerun()
+    
+    with col2:
+        st.markdown("""
+        <div style="background: white; padding: 20px; border-radius: 10px; border: 1px solid #ddd; text-align: center; margin-bottom: 10px;">
+            <b style="color: #2e7d32; font-size: 1.2rem;">5kg Rice</b><br>
+            <span style="color: #2e7d32; font-size: 24px; font-weight: bold;">MWK 20,000</span>
+        </div>
+        """, unsafe_allow_html=True)
+        if st.button("Order 5kg", key="home_5kg", use_container_width=True):
+            st.session_state['order_qty'] = 5
+            st.session_state.page = "🛒 Order"
+            st.rerun()
+    
+    with col3:
+        st.markdown("""
+        <div style="background: white; padding: 20px; border-radius: 10px; border: 1px solid #ddd; text-align: center; margin-bottom: 10px;">
+            <b style="color: #2e7d32; font-size: 1.2rem;">10kg Rice</b><br>
+            <span style="color: #2e7d32; font-size: 24px; font-weight: bold;">MWK 40,000</span>
+        </div>
+        """, unsafe_allow_html=True)
+        if st.button("Order 10kg", key="home_10kg", use_container_width=True):
+            st.session_state['order_qty'] = 10
+            st.session_state.page = "🛒 Order"
+            st.rerun()
+    
+    with col4:
+        st.markdown("""
+        <div style="background: white; padding: 20px; border-radius: 10px; border: 1px solid #ddd; text-align: center; margin-bottom: 10px;">
+            <b style="color: #2e7d32; font-size: 1.2rem;">20kg Rice</b><br>
+            <span style="color: #2e7d32; font-size: 24px; font-weight: bold;">MWK 80,000</span>
+        </div>
+        """, unsafe_allow_html=True)
+        if st.button("Order 20kg", key="home_20kg", use_container_width=True):
+            st.session_state['order_qty'] = 20
+            st.session_state.page = "🛒 Order"
+            st.rerun()
 
 # ============================================
-# ORDER PAGE - COMPLETELY FIXED WITH CORRECT OPTIONS
+# ORDER PAGE - WITH PRESET DELIVERY OPTION
 # ============================================
-elif menu == "🛒 Order":
+elif st.session_state.page == "🛒 Order":
     st.title("Place Your Order")
     
     qty = st.session_state.get('order_qty', 1)
+    preset_delivery = st.session_state.get('preset_delivery', None)
+    
     col1, col2 = st.columns(2)
     
     with col1:
         st.markdown(f"""
-        <div class="product-card">
-            <b>{qty}kg Rice</b><br>
-            <span class="price-tag">MWK {RICE_PRICES[qty]:,}</span>
+        <div style="background: white; padding: 20px; border-radius: 10px; border: 1px solid #ddd; text-align: center;">
+            <b style="color: #2e7d32; font-size: 1.5rem;">{qty}kg Rice</b><br>
+            <span style="color: #2e7d32; font-size: 32px; font-weight: bold;">MWK {RICE_PRICES[qty]:,}</span>
         </div>
         """, unsafe_allow_html=True)
         
@@ -308,48 +369,34 @@ elif menu == "🛒 Order":
             
             st.subheader("Delivery")
             
-            # Delivery type selection
+            # Delivery options with preset if coming from homepage
+            delivery_options = ["Mzuzu Direct Delivery", "Other District (Courier)", "MZUNI Campus"]
+            
+            if preset_delivery and preset_delivery in delivery_options:
+                default_index = delivery_options.index(preset_delivery)
+            else:
+                default_index = 0
+            
             delivery_option = st.radio(
                 "Choose Delivery Method",
-                ["Mzuzu Direct Delivery", "Other District (Courier)", "MZUNI Campus"]
+                delivery_options,
+                index=default_index
             )
             
             transport_cost = 0
             delivery_location = ""
-            delivery_area = ""
-            house = ""
-            room = ""
-            city = ""
-            courier = ""
-            branch = ""
-            recipient = ""
-            location = ""
             
-            # ============================================
-            # OPTION 1: MZUZU DIRECT DELIVERY
-            # ============================================
+            # Mzuzu Direct Delivery
             if delivery_option == "Mzuzu Direct Delivery":
                 st.markdown("**📍 Mzuzu Areas**")
-                
-                # Mzuzu areas only
                 mzuzu_areas = [
-                    "Town (City Centre)",
-                    "Luwinga",
-                    "Katawa",
-                    "Zolozolo",
-                    "Chibanja",
-                    "Mchengautuwa",
-                    "Masasa",
-                    "Area 1B",
-                    "Area 1C",
-                    "McDonald's Area",
-                    "Mzimba Street",
-                    "Chibavi"
+                    "Town (City Centre)", "Luwinga", "Katawa", "Zolozolo", "Chibanja",
+                    "Mchengautuwa", "Masasa", "Area 1B", "Area 1C", "McDonald's Area",
+                    "Mzimba Street", "Chibavi"
                 ]
                 
                 area = st.selectbox("Select Your Area", [""] + mzuzu_areas)
                 if area:
-                    # Calculate transport cost
                     if area in ["Town (City Centre)", "Masasa", "Area 1B", "Area 1C", "McDonald's Area", "Mzimba Street"]:
                         transport_cost = 2000
                     elif area in ["Luwinga", "Zolozolo"]:
@@ -363,42 +410,20 @@ elif menu == "🛒 Order":
                 
                 house = st.text_input("House/Plot Number *")
                 delivery_location = area
-                delivery_area = area
-                
-            # ============================================
-            # OPTION 2: OTHER DISTRICT (COURIER)
-            # ============================================
+            
+            # Other District (Courier)
             elif delivery_option == "Other District (Courier)":
                 st.markdown("**📦 Courier Delivery to Other Districts**")
                 
-                # Malawi districts/cities
                 malawi_cities = [
-                    "Lilongwe",
-                    "Blantyre",
-                    "Zomba",
-                    "Kasungu",
-                    "Dedza",
-                    "Balaka",
-                    "Mangochi",
-                    "Ntcheu",
-                    "Mchinji",
-                    "Chiradzulu",
-                    "Thyolo",
-                    "Mulanje",
-                    "Phalombe",
-                    "Chikwawa",
-                    "Nsanje",
-                    "Nkhotakota",
-                    "Rumphi",
-                    "Karonga",
-                    "Salima"
+                    "Lilongwe", "Blantyre", "Zomba", "Kasungu", "Dedza", "Balaka",
+                    "Mangochi", "Ntcheu", "Mchinji", "Chiradzulu", "Thyolo", "Mulanje",
+                    "Phalombe", "Chikwawa", "Nsanje", "Nkhotakota", "Rumphi", "Karonga", "Salima"
                 ]
                 
                 city = st.selectbox("Select City", [""] + malawi_cities)
-                
                 courier = st.radio("Courier Service", ["CTS", "Speed Couriers"])
                 
-                # CTS branches based on city
                 if courier == "CTS" and city:
                     if city == "Lilongwe":
                         branches = ["Gravity Mall", "Chitipi", "Bunda", "Area 23", "Area 49"]
@@ -413,21 +438,14 @@ elif menu == "🛒 Order":
                 
                 recipient = st.text_input("Recipient Name *")
                 delivery_location = city
-                
-            # ============================================
-            # OPTION 3: MZUNI CAMPUS
-            # ============================================
-            else:  # MZUNI Campus
+            
+            # MZUNI Campus
+            else:
                 st.markdown("**🏫 MZUNI Campus Delivery**")
                 
-                # MZUNI campus locations only
                 mzuni_locations = [
-                    "Male Singles Rooms",
-                    "Female Singles Rooms",
-                    "Chai Hostel",
-                    "Norah Hostel",
-                    "Kandahar Hostel",
-                    "Village"
+                    "Male Singles Rooms", "Female Singles Rooms", "Chai Hostel",
+                    "Norah Hostel", "Kandahar Hostel", "Village"
                 ]
                 
                 location = st.selectbox("Select Location", [""] + mzuni_locations)
@@ -439,14 +457,10 @@ elif menu == "🛒 Order":
                 
                 delivery_location = location
             
-            # ============================================
-            # PAYMENT SECTION
-            # ============================================
             st.subheader("Payment")
             payment = st.selectbox("Payment Method", ["Pay on Delivery", "Mobile Money", "Bank Transfer"])
             notes = st.text_area("Special Instructions (Optional)")
             
-            # Calculate total
             total = RICE_PRICES[qty] + transport_cost
             st.markdown(f"""
             <div style="background: #f0f0f0; padding: 15px; border-radius: 5px; margin: 10px 0;">
@@ -454,23 +468,24 @@ elif menu == "🛒 Order":
             </div>
             """, unsafe_allow_html=True)
             
-            # Submit button
             if st.form_submit_button("✅ Confirm Order", use_container_width=True):
                 if name and phone:
                     st.success("✅ Order placed successfully!")
                     st.balloons()
-                    
-                    # Show order summary
                     st.info(f"**Order Summary:** {qty}kg rice to {delivery_location}")
                     if transport_cost > 0:
                         st.info(f"Transport cost: MWK {transport_cost:,}")
+                    
+                    # Clear preset delivery
+                    if 'preset_delivery' in st.session_state:
+                        del st.session_state['preset_delivery']
                 else:
                     st.error("Please fill all required fields")
 
 # ============================================
 # TRACK ORDER PAGE
 # ============================================
-elif menu == "🔍 Track":
+elif st.session_state.page == "🔍 Track":
     st.title("Track Order")
     tracking = st.text_input("Enter Order Number or Tracking Number")
     if tracking:
@@ -479,7 +494,7 @@ elif menu == "🔍 Track":
 # ============================================
 # LOGIN PAGE
 # ============================================
-elif menu == "🔐 Login":
+elif st.session_state.page == "🔐 Login":
     st.title("Login")
     tab1, tab2 = st.tabs(["Login", "Register"])
     
@@ -519,7 +534,7 @@ elif menu == "🔐 Login":
 # ============================================
 # MY ORDERS PAGE
 # ============================================
-elif menu == "📋 My Orders":
+elif st.session_state.page == "📋 My Orders":
     st.title("My Orders")
     if not st.session_state.user:
         st.warning("Please login first")
@@ -529,7 +544,7 @@ elif menu == "📋 My Orders":
 # ============================================
 # PROFILE PAGE
 # ============================================
-elif menu == "👤 Profile":
+elif st.session_state.page == "👤 Profile":
     st.title("Profile")
     if not st.session_state.user:
         st.warning("Please login first")
@@ -542,7 +557,7 @@ elif menu == "👤 Profile":
 # ============================================
 # ABOUT PAGE
 # ============================================
-elif menu == "ℹ️ About":
+elif st.session_state.page == "ℹ️ About":
     st.title("About")
     col1, col2 = st.columns(2)
     
@@ -566,12 +581,13 @@ elif menu == "ℹ️ About":
 # ============================================
 # LOGOUT
 # ============================================
-elif menu == "🚪 Logout":
+elif st.session_state.page == "🚪 Logout":
     st.session_state.user = None
+    st.session_state.page = "🏠 Home"
     st.rerun()
 
 # ============================================
-# FOOTER
+# FOOTER (Always visible)
 # ============================================
 st.markdown("""
 <div class="footer">
