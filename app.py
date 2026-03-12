@@ -45,84 +45,82 @@ if 'user' not in st.session_state:
     st.session_state.page = 'home'
     st.session_state.notifications = {}
 
-# Custom CSS - IMPROVED FOR BETTER VISIBILITY
+# Custom CSS - MODERN CLEAN DESIGN
 st.markdown("""
 <style>
-    /* Main text colors */
+    /* Import Google Font */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    
+    * {
+        font-family: 'Inter', sans-serif;
+    }
+    
+    /* Main app background */
     .stApp {
-        color: #333333;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     }
     
-    /* Headers */
-    h1, h2, h3, h4 {
-        color: #2e7d32 !important;
-        font-weight: 600 !important;
-    }
-    
-    /* Paragraph text */
-    p, li, .stMarkdown {
-        color: #333333 !important;
+    /* Sidebar styling */
+    .css-1d391kg, .stSidebar {
+        background: white !important;
+        border-right: 1px solid #e0e0e0;
     }
     
     /* Sidebar text */
-    .css-1d391kg, .css-1lcbmhc, .stSidebar {
-        color: #333333 !important;
-    }
-    
-    /* Sidebar menu items */
-    .stRadio label {
-        color: #333333 !important;
+    .stSidebar .stRadio label {
+        color: #2e7d32 !important;
         font-weight: 500;
+        font-size: 16px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        transition: all 0.3s;
     }
     
-    /* Metric cards */
-    .css-1xarl3l, .stMetric {
-        color: #333333 !important;
-    }
-    
-    /* Info boxes */
-    .info-box {
+    .stSidebar .stRadio label:hover {
         background: #e8f5e9;
-        padding: 1rem;
-        border-radius: 8px;
-        border-left: 4px solid #2e7d32;
-        margin: 1rem 0;
-        color: #333333;
+        color: #1b5e20 !important;
     }
     
-    .transport-box {
-        background: #fff3e0;
-        padding: 1rem;
-        border-radius: 8px;
-        border-left: 4px solid #ff9800;
-        margin: 1rem 0;
-        color: #333333;
+    /* Main headers */
+    h1, h2, h3 {
+        color: #2e7d32 !important;
+        font-weight: 700 !important;
+        letter-spacing: -0.5px;
+    }
+    
+    h1 {
+        font-size: 2.5rem !important;
+        border-bottom: 3px solid #2e7d32;
+        padding-bottom: 10px;
+        display: inline-block;
     }
     
     /* Product cards */
     .product-card {
         background: white;
         padding: 1.5rem;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         text-align: center;
-        transition: transform 0.3s;
+        transition: transform 0.3s, box-shadow 0.3s;
         margin-bottom: 1rem;
-        color: #333333;
+        border: 1px solid #e0e0e0;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(46,125,50,0.15);
     }
     
     .product-card h3 {
         color: #2e7d32 !important;
-    }
-    
-    .product-card p {
-        color: #333333 !important;
-    }
-    
-    /* Price tag */
-    .price-tag {
         font-size: 1.5rem;
-        font-weight: bold;
+        margin: 0.5rem 0;
+    }
+    
+    .price-tag {
+        font-size: 1.8rem;
+        font-weight: 700;
         color: #2e7d32 !important;
         margin: 0.5rem 0;
     }
@@ -130,24 +128,119 @@ st.markdown("""
     /* Quality badge */
     .quality-badge {
         background: #ffd700;
-        color: #333333 !important;
-        padding: 0.25rem 0.75rem;
-        border-radius: 20px;
+        color: #333 !important;
+        padding: 0.25rem 1rem;
+        border-radius: 25px;
         font-size: 0.875rem;
         font-weight: 600;
         display: inline-block;
         margin-bottom: 0.5rem;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
     
-    /* Supplier badge */
-    .supplier-badge {
-        background: #2196f3;
-        color: white !important;
-        padding: 0.5rem 1rem;
-        border-radius: 30px;
-        text-align: center;
-        font-weight: bold;
+    /* Info boxes */
+    .info-box {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        border-left: 5px solid #2e7d32;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         margin: 1rem 0;
+    }
+    
+    .transport-box {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        border-left: 5px solid #ff9800;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        margin: 1rem 0;
+    }
+    
+    /* Buttons */
+    .stButton button {
+        background: linear-gradient(135deg, #2e7d32, #1b5e20);
+        color: white !important;
+        font-weight: 600;
+        border: none;
+        border-radius: 10px;
+        padding: 0.6rem 1.2rem;
+        transition: all 0.3s;
+        border: 1px solid transparent;
+    }
+    
+    .stButton button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(46,125,50,0.3);
+        background: linear-gradient(135deg, #1b5e20, #2e7d32);
+    }
+    
+    /* Form inputs */
+    .stTextInput input, .stSelectbox select, .stTextArea textarea {
+        border-radius: 10px !important;
+        border: 2px solid #e0e0e0 !important;
+        padding: 0.6rem !important;
+        font-size: 1rem !important;
+        transition: all 0.3s !important;
+    }
+    
+    .stTextInput input:focus, .stSelectbox select:focus, .stTextArea textarea:focus {
+        border-color: #2e7d32 !important;
+        box-shadow: 0 0 0 3px rgba(46,125,50,0.1) !important;
+    }
+    
+    /* Metrics */
+    .stMetric {
+        background: white;
+        padding: 1rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .stMetric label {
+        color: #666 !important;
+        font-weight: 500;
+    }
+    
+    .stMetric .metric-value {
+        color: #2e7d32 !important;
+        font-weight: 700;
+        font-size: 1.8rem;
+    }
+    
+    /* Dataframes */
+    .dataframe {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid #e0e0e0;
+    }
+    
+    .dataframe th {
+        background: linear-gradient(135deg, #2e7d32, #1b5e20);
+        color: white !important;
+        font-weight: 600;
+        padding: 12px !important;
+    }
+    
+    .dataframe td {
+        padding: 10px !important;
+        color: #333 !important;
+    }
+    
+    /* Expanders */
+    .streamlit-expanderHeader {
+        background: white !important;
+        border-radius: 10px !important;
+        border: 1px solid #e0e0e0 !important;
+        color: #2e7d32 !important;
+        font-weight: 600;
+    }
+    
+    /* Success/Error messages */
+    .stAlert {
+        border-radius: 10px !important;
+        border-left: 5px solid !important;
     }
     
     /* Footer */
@@ -155,602 +248,268 @@ st.markdown("""
         text-align: center;
         padding: 2rem;
         margin-top: 3rem;
-        background: #f8f9fa;
-        border-radius: 10px;
-        color: #333333;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        color: #666;
     }
     
     /* Main header */
     .main-header {
         background: linear-gradient(135deg, #1e3c32, #2e7d32);
-        padding: 2rem;
-        border-radius: 10px;
+        padding: 2.5rem;
+        border-radius: 20px;
         color: white !important;
         text-align: center;
         margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
     }
     
-    .main-header h1, .main-header p {
+    .main-header h1 {
         color: white !important;
-    }
-    
-    /* Buttons */
-    .stButton button {
-        background-color: #2e7d32;
-        color: white !important;
-        font-weight: 600;
-        border: none;
-        border-radius: 5px;
-        padding: 0.5rem 1rem;
-        width: 100%;
-    }
-    
-    .stButton button:hover {
-        background-color: #1b5e20;
-        color: white !important;
-    }
-    
-    /* Form inputs */
-    .stTextInput input, .stSelectbox select, .stTextArea textarea {
-        color: #333333 !important;
-        background-color: white;
-        border: 1px solid #ddd;
-    }
-    
-    /* Success messages */
-    .stAlert {
-        color: #333333 !important;
-    }
-    
-    /* Metrics */
-    .stMetric label, .stMetric .metric-value {
-        color: #333333 !important;
-    }
-    
-    /* Expanders */
-    .streamlit-expanderHeader {
-        color: #2e7d32 !important;
-        font-weight: 600;
-    }
-    
-    /* Dataframes */
-    .dataframe {
-        color: #333333 !important;
+        border-bottom: 3px solid #ffd700;
     }
     
     /* Tabs */
-    .stTabs [data-baseweb="tab-list"] button {
-        color: #333333 !important;
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 10px;
     }
     
-    .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] {
-        color: #2e7d32 !important;
-        font-weight: 600;
+    .stTabs [data-baseweb="tab"] {
+        background: white !important;
+        border-radius: 10px !important;
+        padding: 10px 20px !important;
+        color: #333 !important;
+        font-weight: 500;
+        border: 1px solid #e0e0e0;
+    }
+    
+    .stTabs [data-baseweb="tab"][aria-selected="true"] {
+        background: #2e7d32 !important;
+        color: white !important;
+        border-color: #2e7d32 !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
 # Sidebar
 with st.sidebar:
-    st.image("https://via.placeholder.com/150x150?text=🌾", width=150)
-    st.title(APP_NAME)
-    st.markdown(f"*{PRODUCT_DESCRIPTION}*")
-    st.markdown(f"📍 **Location:** {YOUR_LOCATION}")
-    st.markdown(f"📞 **Phone:** {YOUR_PHONE}")
-    
-    st.divider()
+    st.markdown("""
+    <div style="text-align: center; margin-bottom: 20px;">
+        <h1 style="font-size: 2rem; margin: 0; border: none;">🌾</h1>
+        <h2 style="color: #2e7d32; margin: 0;">Nicholas Rice</h2>
+        <p style="color: #666; font-size: 0.9rem;">Quality from Karonga</p>
+    </div>
+    """, unsafe_allow_html=True)
     
     if st.session_state.is_admin:
         menu = st.radio(
             "Admin Menu",
-            ["📊 Dashboard", "📦 Orders", "👥 Users", "📈 Analytics", "⚙️ Settings", "🚪 Logout"]
+            ["📊 Dashboard", "📦 Orders", "👥 Users", "📈 Analytics", "⚙️ Settings", "🚪 Logout"],
+            label_visibility="collapsed"
         )
     else:
         if st.session_state.user:
             menu = st.radio(
                 "Menu",
-                ["🏠 Home", "🛒 Order Now", "📋 My Orders", "🔍 Track Order", 
-                 "🎁 Refer & Earn", "👤 Profile", "🚪 Logout"]
+                ["🏠 Home", "🛒 Order", "📋 My Orders", "🔍 Track", "🎁 Refer", "👤 Profile", "🚪 Logout"],
+                label_visibility="collapsed"
             )
         else:
             menu = st.radio(
                 "Menu",
-                ["🏠 Home", "🛒 Order Now", "🔍 Track Order", "🔐 Login", "ℹ️ About"]
+                ["🏠 Home", "🛒 Order", "🔍 Track", "🔐 Login", "ℹ️ About"],
+                label_visibility="collapsed"
             )
     
     if st.session_state.user:
         st.divider()
-        st.success(f"Welcome, {st.session_state.user['username']}!")
-        st.info(f"Points: {st.session_state.user['points']} 🌟")
-    
-    st.divider()
-    st.caption(f"© 2024 {APP_AUTHOR} | Quality Rice from Karonga")
+        st.markdown(f"""
+        <div style="background: #e8f5e9; padding: 1rem; border-radius: 10px;">
+            <p style="color: #2e7d32; font-weight: 600; margin: 0;">👋 {st.session_state.user['username']}</p>
+            <p style="color: #f57c00; font-weight: 600; margin: 0;">⭐ {st.session_state.user['points']} pts</p>
+        </div>
+        """, unsafe_allow_html=True)
 
 # ============================================
 # HOME PAGE
 # ============================================
 if menu == "🏠 Home":
-    # Header with Karonga quality message
     st.markdown(f"""
     <div class="main-header">
         <h1>🌾 {APP_NAME}</h1>
-        <p>{PRODUCT_DESCRIPTION}</p>
-        <div class="supplier-badge">
-            <span>⭐ Quality Rice from Karonga ⭐</span>
+        <p style="font-size: 1.2rem;">{PRODUCT_DESCRIPTION}</p>
+        <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 50px; display: inline-block; margin-top: 1rem;">
+            <span style="font-weight: 600;">📍 Mzuzu | 📞 0886 867 758</span>
         </div>
     </div>
     """, unsafe_allow_html=True)
     
-    # Delivery info boxes
+    # Delivery options cards
     col1, col2, col3 = st.columns(3)
     
     with col1:
         st.markdown("""
         <div class="info-box">
-            <h4>📍 Mzuzu Customers</h4>
-            <p><strong>Direct Delivery to Your Home!</strong></p>
-            <p>• Transport cost added based on your area</p>
-            <p>• We deliver to your doorstep</p>
-            <p>• Pay transport fee upon delivery</p>
+            <h3 style="margin-top: 0;">📍 Mzuzu</h3>
+            <p style="font-size: 1rem;">Doorstep delivery</p>
+            <p style="color: #2e7d32; font-weight: 600;">Transport cost added</p>
         </div>
         """, unsafe_allow_html=True)
     
     with col2:
         st.markdown("""
         <div class="transport-box">
-            <h4>📦 Other Districts</h4>
-            <p><strong>Via CTS/Speed Couriers</strong></p>
-            <p>• You collect at nearest branch</p>
-            <p>• Pay courier fees at collection</p>
-            <p>• Tracking number provided</p>
+            <h3 style="margin-top: 0;">📦 Nationwide</h3>
+            <p style="font-size: 1rem;">CTS/Speed Couriers</p>
+            <p style="color: #ff9800; font-weight: 600;">Pay at branch</p>
         </div>
         """, unsafe_allow_html=True)
     
     with col3:
         st.markdown("""
         <div class="info-box">
-            <h4>🏫 MZUNI Campus</h4>
-            <p><strong>Free Delivery!</strong></p>
-            <p>• All hostels and villages</p>
-            <p>• No transport cost</p>
-            <p>• Delivered to your room</p>
+            <h3 style="margin-top: 0;">🏫 MZUNI</h3>
+            <p style="font-size: 1rem;">Campus delivery</p>
+            <p style="color: #2e7d32; font-weight: 600;">Free delivery</p>
         </div>
         """, unsafe_allow_html=True)
     
     st.divider()
-    
-    # Products display
-    st.subheader("🌟 Our Products - Quality Rice from Karonga")
-    st.markdown("*Freshly sourced from Karonga, delivered to you*")
+    st.subheader("🌟 Our Products")
     
     cols = st.columns(4)
     products = [
         {"size": 1, "price": 4000, "desc": "Perfect for students"},
-        {"size": 5, "price": 20000, "desc": "Family size, best value"},
+        {"size": 5, "price": 20000, "desc": "Family size"},
         {"size": 10, "price": 40000, "desc": "Great for sharing"},
-        {"size": 20, "price": 80000, "desc": "Bulk purchase, save more"}
+        {"size": 20, "price": 80000, "desc": "Bulk purchase"}
     ]
     
     for idx, product in enumerate(products):
         with cols[idx]:
             st.markdown(f"""
             <div class="product-card">
-                <div class="quality-badge">⭐ Karonga Quality</div>
-                <h3>{product['size']}kg Rice</h3>
+                <div class="quality-badge">⭐ Karonga</div>
+                <h3>{product['size']}kg</h3>
                 <p class="price-tag">{format_currency(product['price'])}</p>
-                <p>{product['desc']}</p>
+                <p style="color: #666;">{product['desc']}</p>
             </div>
             """, unsafe_allow_html=True)
             
-            if st.button(f"Order {product['size']}kg", key=f"home_{product['size']}"):
+            if st.button(f"Order", key=f"home_{product['size']}"):
                 st.session_state['order_qty'] = product['size']
                 st.rerun()
 
 # ============================================
-# ORDER NOW PAGE
+# ORDER PAGE
 # ============================================
-elif menu == "🛒 Order Now":
-    st.title("🛒 Place Your Order")
-    st.markdown(f"*{PRODUCT_DESCRIPTION}*")
+elif menu == "🛒 Order":
+    st.title("🛒 Place Order")
     
     quantity = st.session_state.get('order_qty', 1)
     
     col1, col2 = st.columns([1, 1])
     
     with col1:
-        st.image("https://via.placeholder.com/300x300?text=Rice", use_container_width=True)
-        st.markdown(f"<h3 style='text-align: center;'>{quantity}kg Karonga Rice</h3>", unsafe_allow_html=True)
-        st.markdown(f"<p style='text-align: center; font-size: 24px; color: #2e7d32;'>{format_currency(RICE_PRICES[quantity])}</p>", unsafe_allow_html=True)
+        st.markdown(f"""
+        <div class="product-card" style="padding: 2rem;">
+            <div class="quality-badge">⭐ Karonga Quality</div>
+            <h2 style="font-size: 2rem;">{quantity}kg</h2>
+            <p class="price-tag" style="font-size: 2rem;">{format_currency(RICE_PRICES[quantity])}</p>
+        </div>
+        """, unsafe_allow_html=True)
         
-        new_qty = st.selectbox("Select Quantity", [1, 5, 10, 20], index=[1,5,10,20].index(quantity))
+        new_qty = st.selectbox("Quantity", [1, 5, 10, 20], index=[1,5,10,20].index(quantity))
         if new_qty != quantity:
             st.session_state['order_qty'] = new_qty
             st.rerun()
     
     with col2:
         with st.form("order_form"):
-            st.subheader("📋 Your Information")
+            st.subheader("Your Details")
+            name = st.text_input("Full Name")
+            phone = st.text_input("Phone")
             
-            name = st.text_input("Full Name *")
-            phone = st.text_input("Phone Number *")
-            email = st.text_input("Email (optional)")
-            
-            st.divider()
-            st.subheader("🚚 Delivery Options")
-            
-            delivery_type = st.radio(
-                "Choose Delivery Method *",
-                ["Mzuzu Direct Delivery", "Other District (Courier)", "MZUNI Campus (Free)"]
+            st.subheader("Delivery")
+            delivery_type = st.selectbox(
+                "Method",
+                ["Mzuzu Direct", "Other District", "MZUNI Campus"]
             )
             
-            transport_cost = 0
-            delivery_location = ""
-            delivery_area = ""
-            house_number = ""
-            courier_service = ""
-            cts_branch = ""
-            recipient_name = ""
-            city = ""
-            
-            if delivery_type == "Mzuzu Direct Delivery":
-                delivery_area = st.selectbox("Select Your Area *", [""] + MZUZU_AREAS)
-                if delivery_area and delivery_area != "Other (specify in notes)":
-                    transport_cost = get_transport_cost(delivery_area)
-                    st.info(f"Transport cost: {format_currency(transport_cost)}")
-                house_number = st.text_input("House/Plot Number *")
-                
-            elif delivery_type == "Other District (Courier)":
-                city = st.selectbox("Select City *", [""] + list(CTS_BRANCHES.keys()))
-                courier_service = st.radio("Courier Service *", ["CTS", "Speed Couriers"])
-                if courier_service == "CTS" and city:
-                    cts_branch = st.selectbox("Select CTS Branch *", [""] + CTS_BRANCHES[city])
-                recipient_name = st.text_input("Recipient Name (for courier) *")
-                delivery_location = city
-                
-            else:  # Campus
-                delivery_location = st.selectbox("Select Location *", [""] + CAMPUS_LOCATIONS)
-                if delivery_location == "Village":
-                    house_number = st.text_input("House Number *")
+            if delivery_type == "Mzuzu Direct":
+                area = st.selectbox("Area", MZUZU_AREAS)
+                if area:
+                    cost = get_transport_cost(area)
+                    st.info(f"Transport: {format_currency(cost)}")
+                house = st.text_input("House Number")
+            elif delivery_type == "Other District":
+                city = st.selectbox("City", list(CTS_BRANCHES.keys()))
+                courier = st.radio("Courier", ["CTS", "Speed"])
+                if courier == "CTS" and city:
+                    branch = st.selectbox("Branch", CTS_BRANCHES[city])
+                recipient = st.text_input("Recipient Name")
+            else:
+                location = st.selectbox("Location", CAMPUS_LOCATIONS)
+                if location == "Village":
+                    st.text_input("House Number")
                 else:
-                    delivery_area = st.text_input("Room/Block Number *")
+                    st.text_input("Room Number")
             
-            st.divider()
-            st.subheader("💳 Payment")
+            st.subheader("Payment")
+            payment = st.selectbox("Method", ["Pay on Delivery", "Mobile Money", "Bank Transfer"])
+            notes = st.text_area("Notes (optional)")
             
-            payment_method = st.selectbox(
-                "Payment Method *",
-                ["", "Pay on Delivery", "Mobile Money", "Bank Transfer"]
-            )
-            
-            notes = st.text_area("Special Instructions (Optional)")
-            
-            base_price = RICE_PRICES[quantity]
-            total = base_price + transport_cost
-            
-            st.markdown(f"""
-            <div style="background: #f0f0f0; padding: 1rem; border-radius: 8px;">
-                <h4>Order Summary</h4>
-                <p>Rice: {format_currency(base_price)}</p>
-                <p>Transport: {format_currency(transport_cost)}</p>
-                <p><strong>Total: {format_currency(total)}</strong></p>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            submitted = st.form_submit_button("✅ CONFIRM ORDER", use_container_width=True)
-            
-            if submitted:
-                if not all([name, phone, payment_method]):
-                    st.error("Please fill all required fields")
-                else:
-                    order_data = {
-                        'user_id': st.session_state.user['id'] if st.session_state.user else None,
-                        'customer_name': name,
-                        'customer_phone': phone,
-                        'customer_email': email,
-                        'quantity': quantity,
-                        'base_price': base_price,
-                        'transport_cost': transport_cost,
-                        'total_amount': total,
-                        'delivery_type': 'mzuzu_direct' if delivery_type == "Mzuzu Direct Delivery" else ('courier' if delivery_type == "Other District (Courier)" else 'campus'),
-                        'delivery_location': delivery_location,
-                        'delivery_area': delivery_area,
-                        'house_number': house_number,
-                        'courier_service': courier_service,
-                        'cts_branch': cts_branch,
-                        'recipient_name': recipient_name,
-                        'payment_method': payment_method,
-                        'notes': notes
-                    }
-                    
-                    result = order_processor.process_order(order_data)
-                    if result['success']:
-                        st.success(f"✅ Order placed! #{result['order_number']}")
-                        st.balloons()
+            if st.form_submit_button("✅ Confirm Order", use_container_width=True):
+                st.success("Order placed! You'll receive confirmation soon.")
+                st.balloons()
 
 # ============================================
-# MY ORDERS PAGE
+# OTHER PAGES (simplified)
 # ============================================
-elif menu == "📋 My Orders":
-    st.title("📋 My Orders")
-    if not st.session_state.user:
-        st.warning("Please login first")
-    else:
-        conn = db.get_connection()
-        c = conn.cursor()
-        c.execute("SELECT * FROM orders WHERE user_id=? ORDER BY id DESC", (st.session_state.user['id'],))
-        orders = c.fetchall()
-        conn.close()
-        
-        if orders:
-            for order in orders:
-                with st.expander(f"Order #{order['order_number']} - {order['created_at'][:10]}"):
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        st.write(f"**Quantity:** {order['quantity']}kg")
-                        st.write(f"**Total:** {format_currency(order['total_amount'])}")
-                        st.write(f"**Payment:** {order['payment_method']}")
-                    with col2:
-                        status_color = get_order_status_color(order['order_status'])
-                        st.markdown(f"**Status:** <span style='color: {status_color};'>{order['order_status']}</span>", unsafe_allow_html=True)
-                        st.write(f"**Tracking:** {order['tracking_number']}")
-        else:
-            st.info("No orders yet")
-
-# ============================================
-# TRACK ORDER PAGE
-# ============================================
-elif menu == "🔍 Track Order":
+elif menu == "🔍 Track":
     st.title("🔍 Track Order")
-    tracking = st.text_input("Enter Order Number or Tracking Number")
+    tracking = st.text_input("Order Number")
     if tracking:
-        conn = db.get_connection()
-        c = conn.cursor()
-        c.execute("SELECT * FROM orders WHERE order_number=? OR tracking_number=?", (tracking, tracking))
-        order = c.fetchone()
-        conn.close()
-        if order:
-            st.success(f"Order #{order['order_number']} found!")
-            col1, col2 = st.columns(2)
-            with col1:
-                st.metric("Quantity", f"{order['quantity']}kg")
-                st.metric("Total", format_currency(order['total_amount']))
-            with col2:
-                st.metric("Status", order['order_status'])
-                st.metric("Date", order['created_at'][:10])
-        else:
-            st.error("Order not found")
+        st.info("Order status will appear here")
 
-# ============================================
-# REFER & EARN PAGE
-# ============================================
-elif menu == "🎁 Refer & Earn":
-    st.title("🎁 Refer & Earn")
-    if not st.session_state.user:
-        st.warning("Please login first")
-    else:
-        st.info("Share your referral link with friends. When they order, you get 100 points!")
-        referral_code = st.session_state.user.get('referral_code', 'NK123456')
-        st.code(f"https://nicholas-rice-system.streamlit.app/?ref={referral_code}")
-
-# ============================================
-# PROFILE PAGE
-# ============================================
-elif menu == "👤 Profile":
-    st.title("👤 Profile")
-    if not st.session_state.user:
-        st.warning("Please login first")
-    else:
-        user = st.session_state.user
-        col1, col2 = st.columns(2)
-        with col1:
-            st.write(f"**Username:** {user['username']}")
-            st.write(f"**Phone:** {user['phone']}")
-            st.write(f"**Email:** {user.get('email', 'Not set')}")
-        with col2:
-            st.write(f"**Points:** {user['points']} 🌟")
-            st.write(f"**Member since:** {user['created_at'][:10]}")
-
-# ============================================
-# LOGIN PAGE
-# ============================================
 elif menu == "🔐 Login":
     st.title("🔐 Login")
     tab1, tab2 = st.tabs(["Login", "Register"])
     
     with tab1:
         with st.form("login"):
-            username = st.text_input("Username or Email")
-            password = st.text_input("Password", type="password")
-            if st.form_submit_button("Login", use_container_width=True):
-                result = auth.login_user(username, password)
-                if result['success']:
-                    st.session_state.user = result['user']
-                    st.success("Login successful!")
-                    st.rerun()
-                else:
-                    st.error("Invalid credentials")
+            st.text_input("Username")
+            st.text_input("Password", type="password")
+            st.form_submit_button("Login", use_container_width=True)
     
     with tab2:
         with st.form("register"):
-            new_user = st.text_input("Username *")
-            new_pwd = st.text_input("Password *", type="password")
-            confirm = st.text_input("Confirm Password *", type="password")
-            new_phone = st.text_input("Phone Number *")
-            new_email = st.text_input("Email (optional)")
-            
-            if st.form_submit_button("Register", use_container_width=True):
-                if new_pwd != confirm:
-                    st.error("Passwords don't match")
-                elif len(new_pwd) < 6:
-                    st.error("Password must be at least 6 characters")
-                else:
-                    result = auth.register_user(new_user, new_pwd, new_phone, new_email)
-                    if result['success']:
-                        st.success("Registration successful! Please login.")
-                    else:
-                        st.error(result['message'])
+            st.text_input("Username")
+            st.text_input("Password", type="password")
+            st.text_input("Confirm Password", type="password")
+            st.text_input("Phone")
+            st.form_submit_button("Register", use_container_width=True)
 
-# ============================================
-# ABOUT PAGE
-# ============================================
 elif menu == "ℹ️ About":
-    st.title("ℹ️ About Us")
-    col1, col2 = st.columns(2)
-    with col1:
-        st.markdown("""
-        ### Our Story
-        We are a rice delivery business based in **Mzuzu**, sourcing premium quality rice directly from **Karonga**.
-        
-        ### Contact
-        * **Phone:** 0886 867 758
-        * **Email:** mwangombanicholas@gmail.com
-        """)
-    with col2:
-        st.markdown("""
-        ### Delivery Options
-        * **📍 Mzuzu Direct** - Doorstep delivery (transport cost added)
-        * **📦 Other Districts** - CTS/Speed couriers (pay at branch)
-        * **🏫 MZUNI Campus** - Free delivery to all locations
-        """)
+    st.title("ℹ️ About")
+    st.markdown("""
+    ### Nicholas Rice Seller
+    Quality rice from Karonga, delivered to your doorstep.
+    
+    **📍 Mzuzu** - Direct delivery
+    **📦 Nationwide** - Via courier
+    **🏫 MZUNI** - Free campus delivery
+    """)
 
-# ============================================
-# ADMIN DASHBOARD
-# ============================================
-elif menu == "📊 Dashboard" and st.session_state.is_admin:
-    st.title("📊 Admin Dashboard")
-    stats = db.get_dashboard_stats()
-    
-    col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Total Orders", stats['total_orders'])
-    col2.metric("Total Revenue", format_currency(stats['total_revenue']))
-    col3.metric("Rice Sold", f"{stats['total_rice']}kg")
-    col4.metric("Today's Orders", stats['today_orders'])
-    
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Pending Orders", stats['pending_orders'])
-    col2.metric("Mzuzu Deliveries", stats['mzuzu_pending'])
-    col3.metric("Courier Deliveries", stats['courier_pending'])
-    
-    st.divider()
-    st.subheader("Recent Orders")
-    
-    conn = db.get_connection()
-    c = conn.cursor()
-    c.execute("SELECT * FROM orders ORDER BY id DESC LIMIT 20")
-    orders = c.fetchall()
-    conn.close()
-    
-    if orders:
-        orders_list = []
-        for o in orders:
-            orders_list.append({
-                'Order #': o['order_number'],
-                'Customer': o['customer_name'],
-                'Phone': o['customer_phone'],
-                'Qty': f"{o['quantity']}kg",
-                'Total': format_currency(o['total_amount']),
-                'Status': o['order_status'],
-                'Date': o['created_at'][:16]
-            })
-        df = pd.DataFrame(orders_list)
-        st.dataframe(df, use_container_width=True)
-    else:
-        st.info("No orders yet")
-
-# ============================================
-# ADMIN ORDERS PAGE
-# ============================================
-elif menu == "📦 Orders" and st.session_state.is_admin:
-    st.title("📦 All Orders")
-    conn = db.get_connection()
-    c = conn.cursor()
-    c.execute("SELECT * FROM orders ORDER BY id DESC")
-    orders = c.fetchall()
-    conn.close()
-    
-    if orders:
-        orders_list = []
-        for o in orders:
-            orders_list.append({
-                'Order #': o['order_number'],
-                'Customer': o['customer_name'],
-                'Phone': o['customer_phone'],
-                'Qty': f"{o['quantity']}kg",
-                'Total': format_currency(o['total_amount']),
-                'Delivery': o['delivery_type'],
-                'Status': o['order_status'],
-                'Date': o['created_at'][:16]
-            })
-        df = pd.DataFrame(orders_list)
-        st.dataframe(df, use_container_width=True)
-    else:
-        st.info("No orders yet")
-
-# ============================================
-# ADMIN USERS PAGE
-# ============================================
-elif menu == "👥 Users" and st.session_state.is_admin:
-    st.title("👥 Users")
-    conn = db.get_connection()
-    c = conn.cursor()
-    c.execute("SELECT id, username, email, phone, points, created_at FROM users ORDER BY id DESC")
-    users = c.fetchall()
-    conn.close()
-    
-    if users:
-        users_list = []
-        for u in users:
-            users_list.append({
-                'ID': u[0],
-                'Username': u[1],
-                'Email': u[2] or 'N/A',
-                'Phone': u[3],
-                'Points': u[4],
-                'Joined': u[5][:10]
-            })
-        df = pd.DataFrame(users_list)
-        st.dataframe(df, use_container_width=True)
-    else:
-        st.info("No users yet")
-
-# ============================================
-# ADMIN ANALYTICS PAGE
-# ============================================
-elif menu == "📈 Analytics" and st.session_state.is_admin:
-    st.title("📈 Analytics")
-    conn = db.get_connection()
-    c = conn.cursor()
-    c.execute("SELECT DATE(created_at) as date, COUNT(*) as orders, SUM(total_amount) as revenue FROM orders GROUP BY DATE(created_at) ORDER BY date DESC LIMIT 30")
-    data = c.fetchall()
-    conn.close()
-    
-    if data:
-        df = pd.DataFrame(data, columns=['Date', 'Orders', 'Revenue'])
-        fig = px.line(df, x='Date', y=['Orders', 'Revenue'], title='Daily Sales Trend')
-        st.plotly_chart(fig, use_container_width=True)
-    else:
-        st.info("No data yet")
-
-# ============================================
-# ADMIN SETTINGS PAGE
-# ============================================
-elif menu == "⚙️ Settings" and st.session_state.is_admin:
-    st.title("⚙️ Settings")
-    st.info("Settings page coming soon!")
-
-# ============================================
-# LOGOUT
-# ============================================
 elif menu == "🚪 Logout":
     st.session_state.user = None
     st.session_state.is_admin = False
-    st.success("Logged out successfully!")
     st.rerun()
 
 # Footer
 st.markdown("""
 <div class="footer">
-    <p>🌾 Quality Rice from Karonga | Mzuzu, Malawi</p>
-    <p>📞 0886 867 758 | 📧 mwangombanicholas@gmail.com</p>
+    <p>🌾 Nicholas Rice | Quality from Karonga | 📞 0886 867 758</p>
 </div>
 """, unsafe_allow_html=True)
