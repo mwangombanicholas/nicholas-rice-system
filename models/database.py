@@ -7,13 +7,19 @@ Location: Mzuzu, Malawi
 import sqlite3
 import hashlib
 import uuid
+import os
+import tempfile
 from datetime import datetime
-from config import DATABASE_PATH, RICE_PRICES
+from pathlib import Path
+
+# Use a writable location for the database
+DB_DIR = tempfile.gettempdir()
+DB_PATH = os.path.join(DB_DIR, 'rice_shop.db')
 
 class Database:
     """Main database handler"""
     
-    def __init__(self, db_path=DATABASE_PATH):
+    def __init__(self, db_path=DB_PATH):
         self.db_path = db_path
         self.init_database()
     
@@ -162,6 +168,7 @@ class Database:
                       ('admin', hashed, 'mwangombanicholas@gmail.com', 'superadmin'))
         
         # Insert default products
+        from config import RICE_PRICES
         for size, price in RICE_PRICES.items():
             c.execute('''INSERT OR IGNORE INTO products 
                         (name, size_kg, price, description, image_url)
@@ -192,8 +199,7 @@ class Database:
         
         conn.commit()
         conn.close()
-        print("✅ Database initialized with Mzuzu location and Karonga supplier!")
-        print("✅ WhatsApp, Email, and SMS notification tables created!")
+        print(f"✅ Database initialized at {self.db_path}")
     
     def create_order(self, order_data):
         """Create a new order"""
@@ -319,5 +325,3 @@ class Database:
         
         conn.close()
         return stats
-
-print("✅ Database module created successfully!")
