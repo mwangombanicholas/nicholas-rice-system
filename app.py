@@ -10,6 +10,11 @@ from datetime import datetime
 import hashlib
 import os
 import sys
+import urllib.parse
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from twilio.rest import Client
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
@@ -212,6 +217,16 @@ st.markdown("""
         color: #2e7d32 !important;
         font-weight: bold;
     }
+    
+    /* Debug section styling */
+    .debug-box {
+        background-color: #f0f0f0;
+        padding: 15px;
+        border-radius: 5px;
+        border-left: 5px solid #ff9800;
+        margin: 10px 0;
+        font-family: monospace;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -238,7 +253,7 @@ with st.sidebar:
         st.markdown(f"**Points:** {st.session_state.user['points']} ⭐")
 
 # ============================================
-# HOME PAGE - WITH CLICKABLE DELIVERY BOXES
+# HOME PAGE
 # ============================================
 if st.session_state.page == "🏠 Home":
     st.title("🌾 Nicholas Rice Seller")
@@ -338,7 +353,7 @@ if st.session_state.page == "🏠 Home":
             st.rerun()
 
 # ============================================
-# ORDER PAGE - WITH PRESET DELIVERY OPTION
+# ORDER PAGE - WITH DEBUGGING USING SECRETS
 # ============================================
 elif st.session_state.page == "🛒 Order":
     st.title("Place Your Order")
@@ -385,6 +400,13 @@ elif st.session_state.page == "🛒 Order":
             
             transport_cost = 0
             delivery_location = ""
+            house = ""
+            room = ""
+            city = ""
+            courier = ""
+            branch = ""
+            recipient = ""
+            location = ""
             
             # Mzuzu Direct Delivery
             if delivery_option == "Mzuzu Direct Delivery":
@@ -468,10 +490,77 @@ elif st.session_state.page == "🛒 Order":
             </div>
             """, unsafe_allow_html=True)
             
-            if st.form_submit_button("✅ Confirm Order", use_container_width=True):
+            submitted = st.form_submit_button("✅ Confirm Order", use_container_width=True)
+            
+            if submitted:
                 if name and phone:
                     st.success("✅ Order placed successfully!")
                     st.balloons()
+                    
+                    # ============================================
+                    # DEBUGGING SECTION - USING SECRETS (SAFE!)
+                    # ============================================
+                    st.markdown("""
+                    <div class="debug-box">
+                        <h4 style="color: #ff9800; margin-top: 0;">🔍 Notification Debug Info</h4>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    # Test Twilio - USING SECRETS
+                    try:
+                        from twilio.rest import Client
+                        # Get credentials from secrets
+                        twilio_sid = st.secrets["twilio"]["account_sid"]
+                        twilio_token = st.secrets["twilio"]["auth_token"]
+                        twilio_phone = st.secrets["twilio"]["phone_number"]
+                        
+                        client = Client(twilio_sid, twilio_token)
+                        st.write("✅ **Twilio:** Client created successfully from secrets")
+                        
+                    except Exception as e:
+                        st.error(f"❌ **Twilio Error:** {e}")
+                    
+                    # Test Email - USING SECRETS
+                    try:
+                        import smtplib
+                        st.write("✅ **Email:** Module loaded successfully")
+                        
+                        # Get email credentials from secrets
+                        email_sender = st.secrets["email"]["sender"]
+                        email_password = st.secrets["email"]["password"]
+                        
+                        # Test SMTP connection
+                        server = smtplib.SMTP('smtp.gmail.com', 587)
+                        server.starttls()
+                        server.login(email_sender, email_password)
+                        server.quit()
+                        st.write("✅ **Email:** SMTP connection successful using secrets")
+                        
+                    except Exception as e:
+                        st.error(f"❌ **Email Error:** {e}")
+                    
+                    # Test WhatsApp Link
+                    try:
+                        import urllib.parse
+                        test_msg = f"Test WhatsApp from Nicholas Rice! Order: {qty}kg to {delivery_location}"
+                        encoded = urllib.parse.quote(test_msg)
+                        whatsapp_link = f"https://wa.me/265886867758?text={encoded}"
+                        st.write(f"✅ **WhatsApp:** Link created")
+                        st.markdown(f"[📱 Click to test WhatsApp]({whatsapp_link})")
+                    except Exception as e:
+                        st.error(f"❌ **WhatsApp Error:** {e}")
+                    
+                    # Show what would be sent
+                    st.markdown("""
+                    <div style="background: #e8f5e9; padding: 15px; border-radius: 5px; margin-top: 10px;">
+                        <h4 style="color: #2e7d32;">📱 Notification Details</h4>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    st.write(f"**Recipient Phone:** 0886867758")
+                    st.write(f"**Recipient Email:** mwangombanicholas@gmail.com")
+                    st.write(f"**Order:** {qty}kg rice to {delivery_location}")
+                    st.write(f"**Total:** MWK {total:,}")
+                    
                     st.info(f"**Order Summary:** {qty}kg rice to {delivery_location}")
                     if transport_cost > 0:
                         st.info(f"Transport cost: MWK {transport_cost:,}")
@@ -489,7 +578,22 @@ elif st.session_state.page == "🔍 Track":
     st.title("Track Order")
     tracking = st.text_input("Enter Order Number or Tracking Number")
     if tracking:
-        st.info("Order status will appear here")
+        conn = db.get_connection()
+        c = conn.cursor()
+        c.execute("SELECT * FROM orders WHERE order_number=? OR tracking_number=?", (tracking, tracking))
+        order = c.fetchone()
+        conn.close()
+        if order:
+            st.success(f"Order #{order['order_number']} found!")
+            col1, col2 = st.columns(2)
+            with col1:
+                st.metric("Quantity", f"{order['quantity']}kg")
+                st.metric("Total", format_currency(order['total_amount']))
+            with col2:
+                st.metric("Status", order['order_status'])
+                st.metric("Date", order['created_at'][:10])
+        else:
+            st.error("Order not found")
 
 # ============================================
 # LOGIN PAGE
@@ -539,7 +643,25 @@ elif st.session_state.page == "📋 My Orders":
     if not st.session_state.user:
         st.warning("Please login first")
     else:
-        st.info("No orders yet")
+        conn = db.get_connection()
+        c = conn.cursor()
+        c.execute("SELECT * FROM orders WHERE user_id=? ORDER BY id DESC", (st.session_state.user['id'],))
+        orders = c.fetchall()
+        conn.close()
+        
+        if orders:
+            for order in orders:
+                with st.expander(f"Order #{order['order_number']} - {order['created_at'][:10]}"):
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.write(f"**Quantity:** {order['quantity']}kg")
+                        st.write(f"**Total:** {format_currency(order['total_amount'])}")
+                        st.write(f"**Payment:** {order['payment_method']}")
+                    with col2:
+                        st.write(f"**Status:** {order['order_status']}")
+                        st.write(f"**Tracking:** {order['tracking_number']}")
+        else:
+            st.info("No orders yet")
 
 # ============================================
 # PROFILE PAGE
@@ -550,9 +672,14 @@ elif st.session_state.page == "👤 Profile":
         st.warning("Please login first")
     else:
         user = st.session_state.user
-        st.write(f"**Username:** {user['username']}")
-        st.write(f"**Phone:** {user['phone']}")
-        st.write(f"**Points:** {user['points']} ⭐")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.write(f"**Username:** {user['username']}")
+            st.write(f"**Phone:** {user['phone']}")
+            st.write(f"**Email:** {user.get('email', 'Not set')}")
+        with col2:
+            st.write(f"**Points:** {user['points']} ⭐")
+            st.write(f"**Member since:** {user.get('created_at', 'N/A')[:10]}")
 
 # ============================================
 # ABOUT PAGE
