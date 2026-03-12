@@ -23,19 +23,6 @@ from utils.helpers import *
 from utils.auth import Auth
 from utils.order_processor import OrderProcessor
 from config import *
-# TEMPORARY - RESET ADMIN PASSWORD (REMOVE AFTER USE)
-import hashlib
-conn = db.get_connection()
-c = conn.cursor()
-# Delete existing admin
-c.execute("DELETE FROM admins WHERE username='admin'")
-# Create new admin with password Admin@123
-hashed = hashlib.sha256("Admin@123".encode()).hexdigest()
-c.execute("INSERT INTO admins (username, password, email, role) VALUES (?, ?, ?, ?)",
-          ('admin', hashed, 'mwangombanicholas@gmail.com', 'superadmin'))
-conn.commit()
-conn.close()
-print("✅ Admin reset: username='admin', password='Admin@123'")
 
 st.set_page_config(
     page_title=APP_NAME,
@@ -43,9 +30,31 @@ st.set_page_config(
     layout="wide"
 )
 
+# ============================================
+# DATABASE AND SERVICES INITIALIZATION
+# ============================================
 db = Database()
 auth = Auth()
 order_processor = OrderProcessor(db)
+
+# ============================================
+# TEMPORARY - RESET ADMIN PASSWORD (REMOVE AFTER USE)
+# ============================================
+try:
+    conn = db.get_connection()
+    c = conn.cursor()
+    # Delete existing admin
+    c.execute("DELETE FROM admins WHERE username='admin'")
+    # Create new admin with password Admin@123
+    hashed = hashlib.sha256("Admin@123".encode()).hexdigest()
+    c.execute("INSERT INTO admins (username, password, email, role) VALUES (?, ?, ?, ?)",
+              ('admin', hashed, 'mwangombanicholas@gmail.com', 'superadmin'))
+    conn.commit()
+    conn.close()
+    print("✅ Admin reset: username='admin', password='Admin@123'")
+except Exception as e:
+    print(f"⚠️ Admin reset error: {e}")
+# ============================================
 
 if 'user' not in st.session_state:
     st.session_state.user = None
