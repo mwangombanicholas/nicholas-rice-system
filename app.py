@@ -240,7 +240,10 @@ with st.sidebar:
     
     # Menu selection
     if st.session_state.user:
-        options = ["🏠 Home", "🛒 Order", "📋 My Orders", "🔍 Track", "👤 Profile", "🚪 Logout"]
+        if st.session_state.is_admin:
+            options = ["🏠 Home", "🛒 Order", "📋 My Orders", "🔍 Track", "👤 Profile", "📊 Dashboard", "🚪 Logout"]
+        else:
+            options = ["🏠 Home", "🛒 Order", "📋 My Orders", "🔍 Track", "👤 Profile", "🚪 Logout"]
     else:
         options = ["🏠 Home", "🛒 Order", "🔍 Track", "🔐 Login", "ℹ️ About"]
     
@@ -353,7 +356,7 @@ if st.session_state.page == "🏠 Home":
             st.rerun()
 
 # ============================================
-# ORDER PAGE - WITH DEBUGGING USING SECRETS
+# ORDER PAGE
 # ============================================
 elif st.session_state.page == "🛒 Order":
     st.title("Place Your Order")
@@ -497,74 +500,6 @@ elif st.session_state.page == "🛒 Order":
                     st.success("✅ Order placed successfully!")
                     st.balloons()
                     
-                    # ============================================
-                    # DEBUGGING SECTION - USING SECRETS (SAFE!)
-                    # ============================================
-                    st.markdown("""
-                    <div class="debug-box">
-                        <h4 style="color: #ff9800; margin-top: 0;">🔍 Notification Debug Info</h4>
-                    </div>
-                    """, unsafe_allow_html=True)
-                    
-                    # Test Twilio - USING SECRETS
-                    try:
-                        from twilio.rest import Client
-                        # Get credentials from secrets
-                        twilio_sid = st.secrets["twilio"]["account_sid"]
-                        twilio_token = st.secrets["twilio"]["auth_token"]
-                        twilio_phone = st.secrets["twilio"]["phone_number"]
-                        
-                        client = Client(twilio_sid, twilio_token)
-                        st.write("✅ **Twilio:** Client created successfully from secrets")
-                        
-                    except Exception as e:
-                        st.error(f"❌ **Twilio Error:** {e}")
-                    
-                    # Test Email - USING SECRETS
-                    try:
-                        import smtplib
-                        st.write("✅ **Email:** Module loaded successfully")
-                        
-                        # Get email credentials from secrets
-                        email_sender = st.secrets["email"]["sender"]
-                        email_password = st.secrets["email"]["password"]
-                        
-                        # Test SMTP connection
-                        server = smtplib.SMTP('smtp.gmail.com', 587)
-                        server.starttls()
-                        server.login(email_sender, email_password)
-                        server.quit()
-                        st.write("✅ **Email:** SMTP connection successful using secrets")
-                        
-                    except Exception as e:
-                        st.error(f"❌ **Email Error:** {e}")
-                    
-                    # Test WhatsApp Link
-                    try:
-                        import urllib.parse
-                        test_msg = f"Test WhatsApp from Nicholas Rice! Order: {qty}kg to {delivery_location}"
-                        encoded = urllib.parse.quote(test_msg)
-                        whatsapp_link = f"https://wa.me/265886867758?text={encoded}"
-                        st.write(f"✅ **WhatsApp:** Link created")
-                        st.markdown(f"[📱 Click to test WhatsApp]({whatsapp_link})")
-                    except Exception as e:
-                        st.error(f"❌ **WhatsApp Error:** {e}")
-                    
-                    # Show what would be sent
-                    st.markdown("""
-                    <div style="background: #e8f5e9; padding: 15px; border-radius: 5px; margin-top: 10px;">
-                        <h4 style="color: #2e7d32;">📱 Notification Details</h4>
-                    </div>
-                    """, unsafe_allow_html=True)
-                    st.write(f"**Recipient Phone:** 0886867758")
-                    st.write(f"**Recipient Email:** mwangombanicholas@gmail.com")
-                    st.write(f"**Order:** {qty}kg rice to {delivery_location}")
-                    st.write(f"**Total:** MWK {total:,}")
-                    
-                    st.info(f"**Order Summary:** {qty}kg rice to {delivery_location}")
-                    if transport_cost > 0:
-                        st.info(f"Transport cost: MWK {transport_cost:,}")
-                    
                     # Clear preset delivery
                     if 'preset_delivery' in st.session_state:
                         del st.session_state['preset_delivery']
@@ -610,6 +545,9 @@ elif st.session_state.page == "🔐 Login":
                 result = auth.login_user(username, password)
                 if result['success']:
                     st.session_state.user = result['user']
+                    # Check if admin
+                    if username == "admin":
+                        st.session_state.is_admin = True
                     st.success("Login successful!")
                     st.rerun()
                 else:
@@ -706,10 +644,110 @@ elif st.session_state.page == "ℹ️ About":
         """)
 
 # ============================================
+# ADMIN DASHBOARD - WITH SMS TEST BUTTON
+# ============================================
+elif st.session_state.page == "📊 Dashboard" and st.session_state.is_admin:
+    st.title("📊 Admin Dashboard")
+    
+    # SMS Test Button - Add this at the top of admin dashboard
+    st.subheader("📱 Test Notifications")
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        if st.button("📱 Test SMS to My Phone", use_container_width=True):
+            try:
+                from twilio.rest import Client
+                # Get credentials from secrets
+                twilio_sid = st.secrets["twilio"]["account_sid"]
+                twilio_token = st.secrets["twilio"]["auth_token"]
+                twilio_phone = st.secrets["twilio"]["phone_number"]
+                
+                client = Client(twilio_sid, twilio_token)
+                
+                # Send to your number
+                message = client.messages.create(
+                    body="Test from Nicholas Rice System!",
+                    from_=twilio_phone,
+                    to="+265886867758"  # Your number with country code
+                )
+                st.success(f"✅ SMS sent! Message SID: {message.sid}")
+                st.info("Check Twilio Console → Monitor → Message Logs to see status")
+            except Exception as e:
+                st.error(f"❌ SMS failed: {e}")
+    
+    with col2:
+        if st.button("📧 Test Email", use_container_width=True):
+            try:
+                import smtplib
+                email_sender = st.secrets["email"]["sender"]
+                email_password = st.secrets["email"]["password"]
+                
+                msg = MIMEMultipart()
+                msg['From'] = email_sender
+                msg['To'] = email_sender
+                msg['Subject'] = "Test from Nicholas Rice"
+                
+                msg.attach(MIMEText("This is a test email from your rice system!", 'plain'))
+                
+                server = smtplib.SMTP('smtp.gmail.com', 587)
+                server.starttls()
+                server.login(email_sender, email_password)
+                server.send_message(msg)
+                server.quit()
+                
+                st.success("✅ Test email sent! Check your inbox.")
+            except Exception as e:
+                st.error(f"❌ Email failed: {e}")
+    
+    st.divider()
+    
+    # Get stats
+    stats = db.get_dashboard_stats()
+    
+    # Stats cards
+    col1, col2, col3, col4 = st.columns(4)
+    col1.metric("Total Orders", stats['total_orders'])
+    col2.metric("Total Revenue", format_currency(stats['total_revenue']))
+    col3.metric("Rice Sold", f"{stats['total_rice']}kg")
+    col4.metric("Today's Orders", stats['today_orders'])
+    
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Pending Orders", stats['pending_orders'])
+    col2.metric("Mzuzu Deliveries", stats['mzuzu_pending'])
+    col3.metric("Courier Deliveries", stats['courier_pending'])
+    
+    st.divider()
+    st.subheader("Recent Orders")
+    
+    conn = db.get_connection()
+    c = conn.cursor()
+    c.execute("SELECT * FROM orders ORDER BY id DESC LIMIT 20")
+    orders = c.fetchall()
+    conn.close()
+    
+    if orders:
+        orders_list = []
+        for o in orders:
+            orders_list.append({
+                'Order #': o['order_number'],
+                'Customer': o['customer_name'],
+                'Phone': o['customer_phone'],
+                'Qty': f"{o['quantity']}kg",
+                'Total': format_currency(o['total_amount']),
+                'Status': o['order_status'],
+                'Date': o['created_at'][:16]
+            })
+        df = pd.DataFrame(orders_list)
+        st.dataframe(df, use_container_width=True)
+    else:
+        st.info("No orders yet")
+
+# ============================================
 # LOGOUT
 # ============================================
 elif st.session_state.page == "🚪 Logout":
     st.session_state.user = None
+    st.session_state.is_admin = False
     st.session_state.page = "🏠 Home"
     st.rerun()
 
