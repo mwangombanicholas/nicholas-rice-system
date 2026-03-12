@@ -34,7 +34,7 @@ if 'user' not in st.session_state:
     st.session_state.is_admin = False
 
 # ============================================
-# IMPROVED CSS - ALL TEXT VISIBLE
+# IMPROVED CSS - ALL TEXT VISIBLE, BUTTONS FIXED
 # ============================================
 st.markdown("""
 <style>
@@ -49,25 +49,12 @@ st.markdown("""
         font-weight: bold !important;
     }
     
-    /* Main title specifically */
+    /* Main title */
     h1 {
         color: #2e7d32 !important;
         font-size: 2.2rem !important;
         border-bottom: 2px solid #2e7d32;
         padding-bottom: 10px;
-        margin-bottom: 20px;
-    }
-    
-    /* Subheaders */
-    h2 {
-        color: #2e7d32 !important;
-        font-size: 1.8rem !important;
-        margin-top: 20px;
-    }
-    
-    h3 {
-        color: #2e7d32 !important;
-        font-size: 1.4rem !important;
     }
     
     /* Regular text - black */
@@ -88,9 +75,77 @@ st.markdown("""
         padding: 8px;
     }
     
-    /* Sidebar headers - green */
-    .stSidebar h1, .stSidebar h2, .stSidebar h3 {
-        color: #2e7d32 !important;
+    /* FIX 1: ALL BUTTONS - Bright and visible */
+    .stButton button {
+        background-color: #2e7d32 !important;
+        color: white !important;
+        font-weight: bold !important;
+        border: 2px solid #1b5e20 !important;
+        border-radius: 5px !important;
+        padding: 10px 20px !important;
+        width: 100%;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+    
+    .stButton button:hover {
+        background-color: #1b5e20 !important;
+        border-color: #0a3a0a !important;
+        transform: scale(1.02);
+    }
+    
+    /* FIX 2: DROPDOWN SELECTION - Make options visible */
+    .stSelectbox select {
+        background-color: white !important;
+        color: black !important;
+        border: 2px solid #2e7d32 !important;
+        border-radius: 5px !important;
+        padding: 8px !important;
+    }
+    
+    /* Dropdown menu options */
+    .stSelectbox option {
+        background-color: white !important;
+        color: black !important;
+        padding: 10px !important;
+    }
+    
+    /* Selected option */
+    .stSelectbox select:focus {
+        border-color: #1b5e20 !important;
+        outline: none !important;
+    }
+    
+    /* FIX 3: TEXT INPUTS - Visible */
+    .stTextInput input {
+        background-color: white !important;
+        color: black !important;
+        border: 2px solid #ccc !important;
+        border-radius: 5px !important;
+        padding: 8px !important;
+    }
+    
+    .stTextInput input:focus {
+        border-color: #2e7d32 !important;
+    }
+    
+    /* FIX 4: RADIO BUTTONS - Visible */
+    .stRadio label {
+        color: black !important;
+    }
+    
+    /* FIX 5: TEXT AREA - Visible */
+    .stTextArea textarea {
+        background-color: white !important;
+        color: black !important;
+        border: 2px solid #ccc !important;
+        border-radius: 5px !important;
+    }
+    
+    /* FIX 6: NUMBER INPUT - Visible */
+    .stNumberInput input {
+        background-color: white !important;
+        color: black !important;
     }
     
     /* Product cards */
@@ -115,29 +170,6 @@ st.markdown("""
         font-weight: bold;
     }
     
-    /* Buttons */
-    .stButton button {
-        background-color: #2e7d32;
-        color: white !important;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 5px;
-        font-weight: bold;
-        width: 100%;
-    }
-    
-    .stButton button:hover {
-        background-color: #1b5e20;
-    }
-    
-    /* Input fields */
-    .stTextInput input, .stSelectbox select, .stTextArea textarea {
-        background-color: #ffffff;
-        border: 1px solid #ccc;
-        color: #000000 !important;
-        border-radius: 5px;
-    }
-    
     /* Info boxes */
     .info-box {
         background-color: #ffffff;
@@ -150,11 +182,6 @@ st.markdown("""
     
     .info-box b {
         color: #2e7d32 !important;
-        font-size: 1.1rem;
-    }
-    
-    .info-box p, .info-box div {
-        color: #000000 !important;
     }
     
     /* Footer */
@@ -173,12 +200,14 @@ st.markdown("""
         background-color: #d4edda !important;
         color: #155724 !important;
         border-radius: 5px;
+        border-left: 5px solid #28a745 !important;
     }
     
     /* Error messages */
     .stAlert[data-baseweb="alert"] {
         background-color: #f8d7da !important;
         color: #721c24 !important;
+        border-left: 5px solid #dc3545 !important;
     }
     
     /* Table text */
@@ -197,12 +226,17 @@ st.markdown("""
     
     /* Tabs */
     .stTabs [data-baseweb="tab-list"] button {
-        color: #000000 !important;
+        color: black !important;
+        background-color: white !important;
+        border: 1px solid #ccc !important;
+        border-radius: 5px 5px 0 0 !important;
+        padding: 10px 20px !important;
     }
     
     .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] {
         color: #2e7d32 !important;
         font-weight: bold;
+        border-bottom: 3px solid #2e7d32 !important;
     }
     
     /* Expanders */
@@ -368,7 +402,22 @@ elif menu == "🔍 Track":
     st.title("Track Order")
     tracking = st.text_input("Enter Order Number or Tracking Number")
     if tracking:
-        st.info("Order status will appear here")
+        conn = db.get_connection()
+        c = conn.cursor()
+        c.execute("SELECT * FROM orders WHERE order_number=? OR tracking_number=?", (tracking, tracking))
+        order = c.fetchone()
+        conn.close()
+        if order:
+            st.success(f"Order #{order['order_number']} found!")
+            col1, col2 = st.columns(2)
+            with col1:
+                st.metric("Quantity", f"{order['quantity']}kg")
+                st.metric("Total", format_currency(order['total_amount']))
+            with col2:
+                st.metric("Status", order['order_status'])
+                st.metric("Date", order['created_at'][:10])
+        else:
+            st.error("Order not found")
 
 # ============================================
 # LOGIN PAGE
@@ -418,7 +467,26 @@ elif menu == "📋 My Orders":
     if not st.session_state.user:
         st.warning("Please login first")
     else:
-        st.info("No orders yet")
+        conn = db.get_connection()
+        c = conn.cursor()
+        c.execute("SELECT * FROM orders WHERE user_id=? ORDER BY id DESC", (st.session_state.user['id'],))
+        orders = c.fetchall()
+        conn.close()
+        
+        if orders:
+            for order in orders:
+                with st.expander(f"Order #{order['order_number']} - {order['created_at'][:10]}"):
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.write(f"**Quantity:** {order['quantity']}kg")
+                        st.write(f"**Total:** {format_currency(order['total_amount'])}")
+                        st.write(f"**Payment:** {order['payment_method']}")
+                    with col2:
+                        status_color = get_order_status_color(order['order_status'])
+                        st.markdown(f"**Status:** <span style='color: {status_color};'>{order['order_status']}</span>", unsafe_allow_html=True)
+                        st.write(f"**Tracking:** {order['tracking_number']}")
+        else:
+            st.info("No orders yet")
 
 # ============================================
 # PROFILE PAGE
