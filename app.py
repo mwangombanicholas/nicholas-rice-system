@@ -1,5 +1,5 @@
 """
-Nicholas Rice Seller - ALL TEXT VISIBLE
+Nicholas Rice Seller - White Background Everywhere
 Author: Nicholas Mwangomba
 """
 
@@ -16,97 +16,110 @@ st.set_page_config(
     layout="wide"
 )
 
-# FORCE ALL TEXT TO BE VISIBLE
+# FORCE WHITE BACKGROUND EVERYWHERE
 st.markdown("""
 <style>
-    /* Force ALL text to be black and visible */
+    /* Force white background on everything */
+    .stApp, .main, .block-container, .css-1d391kg, .stSidebar {
+        background-color: #FFFFFF !important;
+    }
+    
+    /* All text black by default */
     .stApp, .stApp * {
         color: #000000 !important;
     }
     
-    /* Headers in green but still visible */
+    /* Headers in green */
     h1, h2, h3, h4, h5, h6 {
         color: #2e7d32 !important;
         font-weight: bold !important;
-        font-size: 1.5em !important;
     }
     
-    /* Make "Our Products" extra visible */
-    h2:contains("Our Products"), 
-    .stMarkdown:contains("Our Products") {
-        color: #2e7d32 !important;
-        font-size: 2em !important;
-        text-decoration: underline !important;
-    }
-    
-    /* Sidebar text */
+    /* Sidebar */
     .css-1d391kg, .stSidebar, .stSidebar * {
+        background-color: #FFFFFF !important;
         color: #000000 !important;
     }
     
-    /* Sidebar menu items */
+    /* Sidebar menu */
     .stSidebar .stRadio label {
         color: #000000 !important;
         font-size: 16px !important;
+        background-color: transparent !important;
     }
     
     /* Buttons */
     .stButton button {
         background-color: #2e7d32 !important;
-        color: white !important;
+        color: #FFFFFF !important;
         font-weight: bold !important;
         border: 2px solid #1b5e20 !important;
     }
     
     /* Info boxes */
     .stAlert, .stInfo, .stSuccess, .stWarning {
+        background-color: #FFFFFF !important;
         color: #000000 !important;
-        background-color: #ffffff !important;
-    }
-    
-    /* Metric text */
-    .stMetric label, .stMetric .metric-value {
-        color: #000000 !important;
+        border: 2px solid #2e7d32 !important;
     }
     
     /* Product cards */
     .product-card {
-        background-color: white;
+        background-color: #FFFFFF !important;
         padding: 20px;
         border-radius: 10px;
-        border: 1px solid #ddd;
+        border: 2px solid #2e7d32;
         text-align: center;
         margin: 10px 0;
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
     
-    .product-card h3 {
-        color: #2e7d32 !important;
-        font-size: 1.5em !important;
+    /* Delivery boxes */
+    .delivery-box {
+        background-color: #FFFFFF !important;
+        padding: 20px;
+        border-radius: 10px;
+        border: 2px solid #2e7d32;
+        margin: 10px 0;
     }
     
-    .product-card p {
+    /* Metrics */
+    .stMetric {
+        background-color: #FFFFFF !important;
+        padding: 15px;
+        border-radius: 10px;
+        border: 2px solid #2e7d32;
+    }
+    
+    .stMetric label, .stMetric .metric-value {
         color: #000000 !important;
-    }
-    
-    .price-tag {
-        color: #2e7d32 !important;
-        font-size: 24px !important;
-        font-weight: bold !important;
     }
     
     /* Footer */
     .footer-text {
+        background-color: #FFFFFF !important;
         color: #000000 !important;
         text-align: center;
         padding: 20px;
         margin-top: 30px;
-        border-top: 1px solid #ddd;
+        border-top: 2px solid #2e7d32;
     }
     
-    /* Fix for any remaining dark text */
-    .stMarkdown, .stText, div:not(.stButton) {
+    /* Form inputs */
+    .stTextInput input, .stSelectbox select {
+        background-color: #FFFFFF !important;
         color: #000000 !important;
+        border: 2px solid #2e7d32 !important;
+    }
+    
+    /* Dividers */
+    hr {
+        border: 1px solid #2e7d32 !important;
+    }
+    
+    /* Remove any dark backgrounds */
+    div[data-testid="stVerticalBlock"] {
+        background-color: #FFFFFF !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -182,7 +195,7 @@ if st.session_state.page == "🏠 Home":
     
     with col1:
         st.markdown("""
-        <div style="background-color: #e8f5e9; padding: 20px; border-radius: 10px; border-left: 5px solid #2e7d32;">
+        <div style="background-color: #FFFFFF; padding: 20px; border-radius: 10px; border: 2px solid #2e7d32; margin: 10px 0;">
             <h3 style="color: #2e7d32; margin-top: 0;">📍 Mzuzu Direct</h3>
             <p style="color: #000000; margin: 5px 0;">Doorstep delivery</p>
             <p style="color: #000000; margin: 5px 0;">Transport cost added</p>
@@ -191,7 +204,7 @@ if st.session_state.page == "🏠 Home":
     
     with col2:
         st.markdown("""
-        <div style="background-color: #fff3e0; padding: 20px; border-radius: 10px; border-left: 5px solid #ff9800;">
+        <div style="background-color: #FFFFFF; padding: 20px; border-radius: 10px; border: 2px solid #ff9800; margin: 10px 0;">
             <h3 style="color: #ff9800; margin-top: 0;">📦 Other Districts</h3>
             <p style="color: #000000; margin: 5px 0;">CTS/Speed Couriers</p>
             <p style="color: #000000; margin: 5px 0;">Pay at branch</p>
@@ -200,7 +213,7 @@ if st.session_state.page == "🏠 Home":
     
     with col3:
         st.markdown("""
-        <div style="background-color: #e8f5e9; padding: 20px; border-radius: 10px; border-left: 5px solid #2e7d32;">
+        <div style="background-color: #FFFFFF; padding: 20px; border-radius: 10px; border: 2px solid #2e7d32; margin: 10px 0;">
             <h3 style="color: #2e7d32; margin-top: 0;">🏫 MZUNI Campus</h3>
             <p style="color: #000000; margin: 5px 0;">Free delivery</p>
             <p style="color: #000000; margin: 5px 0;">All hostels & villages</p>
@@ -208,7 +221,7 @@ if st.session_state.page == "🏠 Home":
         """, unsafe_allow_html=True)
     
     st.markdown("<hr>", unsafe_allow_html=True)
-    st.markdown("<h2 style='color: #2e7d32; font-size: 2em; text-decoration: underline;'>🌟 Our Products</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color: #2e7d32; font-size: 2em; text-align: center;'>🌟 Our Products</h2>", unsafe_allow_html=True)
     
     cols = st.columns(4)
     products = [
@@ -221,7 +234,7 @@ if st.session_state.page == "🏠 Home":
     for i, p in enumerate(products):
         with cols[i]:
             st.markdown(f"""
-            <div style="background-color: white; padding: 20px; border-radius: 10px; border: 2px solid #2e7d32; text-align: center; margin: 10px 0;">
+            <div style="background-color: #FFFFFF; padding: 20px; border-radius: 10px; border: 2px solid #2e7d32; text-align: center; margin: 10px 0;">
                 <h3 style="color: #2e7d32; font-size: 1.8em; margin: 0;">{p['kg']}kg</h3>
                 <p style="color: #2e7d32; font-size: 24px; font-weight: bold; margin: 10px 0;">MWK {p['price']:,}</p>
                 <p style="color: #000000; font-size: 14px;">{p['desc']}</p>
@@ -238,7 +251,7 @@ elif st.session_state.page == "🔐 Admin Login":
     
     with col1:
         st.markdown("""
-        <div style="background-color: white; padding: 30px; border-radius: 10px; border: 2px solid #2e7d32;">
+        <div style="background-color: #FFFFFF; padding: 30px; border-radius: 10px; border: 2px solid #2e7d32;">
             <h3 style="color: #2e7d32;">Login to Admin Panel</h3>
         """, unsafe_allow_html=True)
         
@@ -259,7 +272,7 @@ elif st.session_state.page == "🔐 Admin Login":
     
     with col2:
         st.markdown("""
-        <div style="background-color: #f8f9fa; padding: 30px; border-radius: 10px; border: 2px solid #2e7d32;">
+        <div style="background-color: #FFFFFF; padding: 30px; border-radius: 10px; border: 2px solid #2e7d32;">
             <h3 style="color: #2e7d32;">Demo Credentials</h3>
             <p style="color: #000000; font-size: 16px;"><strong>Username:</strong> admin</p>
             <p style="color: #000000; font-size: 16px;"><strong>Password:</strong> admin123</p>
@@ -273,14 +286,18 @@ elif st.session_state.page == "🔐 Admin Login":
 elif st.session_state.page == "📊 Admin Dashboard" and st.session_state.is_admin:
     st.markdown("<h1 style='color: #2e7d32;'>📊 Admin Dashboard</h1>", unsafe_allow_html=True)
     
-    st.markdown("<p style='color: #2e7d32; font-size: 1.2em; background-color: #e8f5e9; padding: 10px; border-radius: 5px;'>✅ Welcome Admin! You are successfully logged in.</p>", unsafe_allow_html=True)
+    st.markdown("""
+    <div style="background-color: #e8f5e9; padding: 15px; border-radius: 10px; border: 2px solid #2e7d32; margin: 20px 0;">
+        <p style="color: #2e7d32; font-size: 1.2em; margin: 0;">✅ Welcome Admin! You are successfully logged in.</p>
+    </div>
+    """, unsafe_allow_html=True)
     
     # Stats cards
     col1, col2, col3 = st.columns(3)
     
     with col1:
         st.markdown("""
-        <div style="background-color: white; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #2e7d32;">
+        <div style="background-color: #FFFFFF; padding: 20px; border-radius: 10px; border: 2px solid #2e7d32; text-align: center;">
             <h3 style="color: #2e7d32; margin: 0;">Total Orders</h3>
             <p style="color: #000000; font-size: 36px; font-weight: bold; margin: 10px 0;">0</p>
         </div>
@@ -288,7 +305,7 @@ elif st.session_state.page == "📊 Admin Dashboard" and st.session_state.is_adm
     
     with col2:
         st.markdown("""
-        <div style="background-color: white; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #2e7d32;">
+        <div style="background-color: #FFFFFF; padding: 20px; border-radius: 10px; border: 2px solid #2e7d32; text-align: center;">
             <h3 style="color: #2e7d32; margin: 0;">Total Revenue</h3>
             <p style="color: #000000; font-size: 36px; font-weight: bold; margin: 10px 0;">MWK 0</p>
         </div>
@@ -296,7 +313,7 @@ elif st.session_state.page == "📊 Admin Dashboard" and st.session_state.is_adm
     
     with col3:
         st.markdown("""
-        <div style="background-color: white; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #2e7d32;">
+        <div style="background-color: #FFFFFF; padding: 20px; border-radius: 10px; border: 2px solid #2e7d32; text-align: center;">
             <h3 style="color: #2e7d32; margin: 0;">Rice Sold</h3>
             <p style="color: #000000; font-size: 36px; font-weight: bold; margin: 10px 0;">0 kg</p>
         </div>
@@ -309,11 +326,19 @@ elif st.session_state.page == "📊 Admin Dashboard" and st.session_state.is_adm
     
     with col1:
         if st.button("📱 Test SMS", use_container_width=True):
-            st.info("📱 SMS test button clicked - configure Twilio to enable")
+            st.markdown("""
+            <div style="background-color: #FFFFFF; padding: 15px; border-radius: 5px; border: 2px solid #2e7d32; margin: 10px 0;">
+                <p style="color: #000000; margin: 0;">📱 SMS test button clicked - configure Twilio to enable</p>
+            </div>
+            """, unsafe_allow_html=True)
     
     with col2:
         if st.button("📧 Test Email", use_container_width=True):
-            st.info("📧 Email test button clicked - configure email to enable")
+            st.markdown("""
+            <div style="background-color: #FFFFFF; padding: 15px; border-radius: 5px; border: 2px solid #2e7d32; margin: 10px 0;">
+                <p style="color: #000000; margin: 0;">📧 Email test button clicked - configure email to enable</p>
+            </div>
+            """, unsafe_allow_html=True)
     
     st.markdown("<hr>", unsafe_allow_html=True)
     
@@ -333,7 +358,7 @@ elif st.session_state.page == "🚪 Logout":
 
 # Footer
 st.markdown("""
-<div style="text-align: center; padding: 20px; margin-top: 30px; border-top: 2px solid #2e7d32;">
+<div style="background-color: #FFFFFF; text-align: center; padding: 20px; margin-top: 30px; border-top: 2px solid #2e7d32;">
     <p style="color: #000000; font-size: 16px;">🌾 Nicholas Rice | Quality from Karonga | 📞 0886 867 758</p>
 </div>
 """, unsafe_allow_html=True)
