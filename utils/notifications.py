@@ -10,6 +10,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 import streamlit as st
+from twilio.rest import Client
 from config import *
 
 class NotificationService:
@@ -20,6 +21,18 @@ class NotificationService:
         self.admin_email = ADMIN_EMAIL
         self.admin_phone = ADMIN_PHONE
         self.whatsapp_number = WHATSAPP_NUMBER
+        
+        # Get credentials from Streamlit secrets (secure!)
+        try:
+            self.twilio_sid = st.secrets["twilio"]["account_sid"]
+            self.twilio_token = st.secrets["twilio"]["auth_token"]
+            self.twilio_phone = st.secrets["twilio"]["phone_number"]
+            self.email_password = st.secrets["email"]["password"]
+            self.email_sender = st.secrets["email"]["sender"]
+            self.secrets_available = True
+        except:
+            self.secrets_available = False
+            print("Warning: Secrets not configured. Notifications will be simulated.")
     
     def send_order_notifications(self, order):
         """Send all notifications for a new order"""
@@ -129,33 +142,58 @@ class NotificationService:
             return False
     
     def send_email(self, subject, body):
-        """Send email notification"""
-        try:
-            # For now, just print (you'll add credentials later)
-            print(f"📧 Email would be sent to {self.admin_email}")
-            print(f"Subject: {subject}")
-            print(f"Body preview: {body[:100]}...")
-            
-            # Store in session
-            st.session_state['email_sent'] = True
-            
+        """Send email notification using Gmail"""
+        if not self.secrets_available:
+            print(f"📧 Email would be sent: {subject}")
             return True
+            
+        try:
+            msg = MIMEMultipart()
+            msg['From'] = self.email_sender
+            msg['To'] = self.admin_email
+            msg['Subject'] = subject
+            
+            msg.attach(MIMEText(body, 'plain'))
+            
+            server = smtplib.SMTP('smtp.gmail.com', 587)
+            server.starttls()
+            server.login(self.email_sender, self.email_password)
+            text = msg.as_string()
+            server.sendmail(self.email_sender, self.admin_email, text)
+            server.quit()
+            
+            print(f"Email sent successfully to {self.admin_email}")
+            return True
+            
         except Exception as e:
             print(f"Email error: {e}")
             return False
     
     def send_sms(self, message):
-        """Send SMS notification (integrates with Africa's Talking)"""
-        try:
+        """Send SMS notification using Twilio"""
+        if not self.secrets_available:
             print(f"📱 SMS would be sent to {self.admin_phone}: {message}")
-            
-            # Store in session
-            st.session_state['sms_sent'] = True
-            
             return True
+            
+        try:
+            # Initialize Twilio client
+            client = Client(self.twilio_sid, self.twilio_token)
+            
+            # Format recipient phone number
+            to_phone = self.admin_phone
+            if not to_phone.startswith('+'):
+                to_phone = '+265' + to_phone.lstrip('0')
+            
+            # Send message
+            client.messages.create(
+                body=message,
+                from_=self.twilio_phone,
+                to=to_phone
+            )
+            
+            print(f"SMS sent successfully to {to_phone}")
+            return True
+            
         except Exception as e:
             print(f"SMS error: {e}")
             return False
-
-print("✅ Notification service created successfully!")
-print("📱 WhatsApp, 📧 Email, and 📱 SMS notifications ready!")
