@@ -3,4 +3,4 @@ pandas
 plotly
 numpy
 python-dotenv
-twilio
+twilio==8.5.0
